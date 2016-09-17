@@ -1,6 +1,8 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var patientList = require('patient.json');
+var monitorList = require('monitor.json');
 
 var counter = 0;
 
@@ -85,36 +87,32 @@ function recievePatientUpdate(update) {
     console.log(update.mid + ': ' + update.data);
     
     var mid = update.mid;
-    var mType = MB[mid].type;
-    var pid = MB[mid].pid;
+    var mType = monitorList[mid].type;
+    var pid = monitorList[mid].pid;
     
     //Send to database for updating
     if(mType == 'heart'){
-        PB[pid].last_heart = update.data;
+        patientList[pid].last_heart = update.data;
         
         //Check if alert is needed
-        if(update.data > PB[pid].crit_heart){
+        if(update.data > patientList[pid].crit_heart){
             sendAlert(pid, mType, update);
         }
     } else if(mType == 'gluc') {
-        PB[pid].last_gluc = update.data;
+        patientList[pid].last_gluc = update.data;
         
         //Check if alert is needed
-        if(update.data > PB[pid].crit_gluc){
+        if(update.data > patientList[pid].crit_gluc){
             sendAlert(pid, mType, update);
         }
     } else if(mType == 'oxyg'){
-        PB[pid].last_oxyg = update.data;
+        patientList[pid].last_oxyg = update.data;
         
         //Check if alert is needed
-        if(update.data > PB[pid].crit_oxyg){
+        if(update.data > patientList[pid].crit_oxyg){
             sendAlert(pid, mType, update);
         }
     }
-    
-    
-    
-    
 }
 
 function sendAlert(pid, type, update) {
