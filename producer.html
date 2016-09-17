@@ -21,7 +21,7 @@
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-        var socket = io('/moniter');
+        var room = io('/moniter');
         var mid;
         var low;
         var high;
@@ -40,12 +40,12 @@
             return false;
         });
 
-        socket.on('connect', function(msg) {
+        room.on('connect', function(msg) {
             console.log('Connected to server');
             connected = true;
         });
 
-        socket.on('disconnect', function(msg) {
+        room.on('disconnect', function(msg) {
             console.log('Disconnected from Server');
             connected = false;
         });
@@ -57,9 +57,10 @@
             };
             if (connected) {
                 console.log('data sent');
-                socket.emit('patient update', d);
+                room.emit('patient update', d);
             }
         }
+
     </script>
 </body>
 

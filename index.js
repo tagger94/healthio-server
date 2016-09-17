@@ -4,8 +4,6 @@ var io = require('socket.io')(http);
 var patientList = require('./patient.json');
 var monitorList = require('./monitor.json');
 
-var counter = 0;
-
 var patientRooms = {};
 
 var adminRoom = io.of('/admin');
@@ -13,8 +11,6 @@ var monitorRoom = io.of('/moniter');
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/admin.html');
-
-
 });
 
 app.get('/consumer', function(req, res) {
@@ -35,13 +31,26 @@ http.listen(process.env.PORT, function() {
 
 //CODE
 /********
+Default Methods
+*********/
+io.on('connect', function(socket) {
+    console.log('new client connected');
+})
+
+/********
 Producer Methods
 *********/
 monitorRoom.on('connection', function(socket) {
-    console.log('Connected made to monitor');
-});
+    console.log('Connection made to monitor');
+    
+    
+    // Setup recievers
+    socket.on('disconnect', function(socket) {
+        console.log('Disconnected from monitor');
+    });
 
-monitorRoom.on('patient update', recievePatientUpdate);
+    socket.on('patient update', recievePatientUpdate);
+});
 
 function recievePatientUpdate(update) {
     //Patient Data is recieved
@@ -120,36 +129,33 @@ adminRoom.on('connection', function(socket) {
     console.log('Admin has connected');
 
     // send information back to admin
+    
+    // Setup recievers
+    socket.on('disconnect', function(socket) {
+        console.log('Admin has disconnected');
+    });
+
+    socket.on('request patient list', sendPatientListToAdmin);
+    socket.on('request moniter list', sendMoniterListToAdmin);
+    socket.on('add patient', addPatient);
+    socket.on('add moniter', addMoniter);
 
 });
-
-adminRoom.on('disconnect', function(socket) {
-    console.log('Admin has disconnected');
-});
-
-adminRoom.on('request patient list', sendPatientListToAdmin);
-adminRoom.on('request moniter list', sendMoniterListToAdmin);
 
 function sendPatientListToAdmin() {
     adminRoom.emit('patient list', patientList);
 }
 
 function sendMoniterListToAdmin() {
-
+    adminRoom.emit('moniter list', monitorList);
 }
 
+function addPatient(message) {
 
+    patientList[message.pid] = message.data;
+}
 
-/*
-    createPatient
-    updatePatient
-    deletePatient
-    AttachMonitor
-    
-    updatePatient
-    
-    recieve patient update
-    
-    sendAlert
-    sendStatus
-*/
+function addMoniter(message) {
+
+    monitorList[message.mid] = message.data;
+}
