@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Consumer</title>
+
+</head>
+
+<body>
+    <div>
+        <form>
+            Patient ID:<br>
+            <input type="text" id="pid"><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div style='width=100%'>
+        <!--<ul id="messages-normal" style='border: solid black thick; height:250px'></ul>-->
+        <br>
+        <ul id="messages-alert" style='border: solid black thick; height:250px'></ul>
+    </div>
+
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        //var socket = io();
+        //var roomAlex = io('/alex');
+        var room;
+
+        $('form').submit(function() {
+            var temp = $('#pid').val();
+            setupRoom(temp);
+            return false;
+        });
+
+        // socket.on('message', recieveMessage);
+        // room.on('alert', recieveAlert);
+        
+        function setupRoom(roomID) {
+            room = io('/' + roomID);
+            console.log("set room to " + roomID);
+            
+            room.on('connect', function(msg){
+                console.log("Connected room to server");
+            });
+            
+            room.on('disconnect', function(msg){
+                console.log("disconnect from server");
+            });
+            
+            //Setup Alert message
+            room.on('alert', recieveAlert);
+        }
+
+
+        function recieveAlert(message) {
+            console.log(message);
+            $('#messages-alert').append($('<li>').text(message));
+        }
+    </script>
+</body>
+
+</html>

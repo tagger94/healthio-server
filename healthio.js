@@ -1,15 +1,25 @@
-var http = require("http");
+// Import events module
+var events = require('events');
+// Create an eventEmitter object
+var eventEmitter = new events.EventEmitter();
 
-http.createServer(function (request, response) {
+// Create an event handler as follows
+var connectHandler = function connected() {
+   console.log('connection succesful.');
+  
+   // Fire the data_received event 
+   eventEmitter.emit('data_received');
+}
 
-   // Send the HTTP header 
-   // HTTP Status: 200 : OK
-   // Content Type: text/plain
-   response.writeHead(200, {'Content-Type': 'text/plain'});
-   
-   // Send the response body as "Hello World"
-   response.end('Hello World\n');
-}).listen(process.env.PORT);
+// Bind the connection event with the handler
+eventEmitter.on('connection', connectHandler);
+ 
+// Bind the data_received event with the anonymous function
+eventEmitter.on('data_received', function(){
+   console.log('data received succesfully.');
+});
 
-// Console will print the message
-console.log('Server running at ' + process.env.IP);
+// Fire the connection event 
+eventEmitter.emit('connection');
+
+console.log("Program Ended.");
