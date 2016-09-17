@@ -12,13 +12,8 @@ var adminRoom = io.of('/admin');
 var monitorRoom = io.of('/moniter');
 
 app.get('/', function(req, res) {
-    if (counter % 2 == 0) {
-        res.sendFile(__dirname + '/producer.html');
-    }
-    else {
-        res.sendFile(__dirname + '/consumer.html');
-    }
-    counter++;
+    res.sendFile(__dirname + '/admin.html');
+
 
 });
 
@@ -96,11 +91,11 @@ function createNewPatientRoom(pid) {
         patientRooms[pid] = io.of('/' + pid);
         console.log('opening room: ' + pid);
     }
-    
+
     patientRooms[pid].on('connection', function() {
         console.log("Connected to patient room");
     })
-    
+
     patientRooms[pid].on('disconnect', function() {
         console.log("disconnected to patient room");
     })
