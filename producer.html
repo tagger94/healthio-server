@@ -11,6 +11,9 @@
         <form>
             Monitor ID:<br>
             <input type="text" id="mid"><br>
+            Generate Number Between:<br>
+            <input type="text" id='low'><br>
+            <input type="text" id='high'><br>
             <input type="submit" value="Submit">
         </form>
     </div>
@@ -19,13 +22,19 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
         var socket = io();
-        var mid = "ps123456";
+        var mid;
+        var low;
+        var high;
 
         var timer;
         var connected = false;
 
         $('form').submit(function() {
             mid = $('#mid').val();
+            
+            low = $('#low').val();
+            high = $('#high').val();
+            
             console.log("set Monitor ID to " + mid);
             timer = setInterval(sendData, 3000);
             return false;
@@ -34,8 +43,6 @@
         socket.on('connect', function(msg) {
             console.log('Connected to server');
             connected = true;
-
-
         });
 
         socket.on('disconnect', function(msg) {
@@ -43,12 +50,10 @@
             connected = false;
         });
 
-
-
         function sendData() {
             var d = {
                 mid: mid,
-                data: Math.round(Math.random() * 100)
+                data: Math.round(Math.random() * (high - low) + low)
             };
             if (connected) {
                 console.log('data sent');

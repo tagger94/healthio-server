@@ -1,8 +1,10 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var patientList = require('patient.json');
-var monitorList = require('monitor.json');
+var patientList = require('./patient.json');
+var monitorList = require('./monitor.json');
+
+//console.log(patientList);
 
 var counter = 0;
 
@@ -84,28 +86,30 @@ io.on('connection', function(socket) {
 
 function recievePatientUpdate(update) {
     //Patient Data is recieved
-    console.log(update.mid + ': ' + update.data);
+    //console.log(update.mid + ': ' + update.data);
     
     var mid = update.mid;
-    var mType = monitorList[mid].type;
+    var mType = mid.slice(0,2);
     var pid = monitorList[mid].pid;
     
+    console.log("Update from " + mid + ' for ' + pid + ': ' + update.data);
+    
     //Send to database for updating
-    if(mType == 'heart'){
+    if(mType == 'hb'){
         patientList[pid].last_heart = update.data;
         
         //Check if alert is needed
-        if(update.data > patientList[pid].crit_heart){
+        if(update.data > patientList[pid].crit_high_heart || update.data < patientList[pid].crit_low_heart){
             sendAlert(pid, mType, update);
         }
-    } else if(mType == 'gluc') {
+    } else if(mType == 'gl') {
         patientList[pid].last_gluc = update.data;
         
         //Check if alert is needed
         if(update.data > patientList[pid].crit_gluc){
             sendAlert(pid, mType, update);
         }
-    } else if(mType == 'oxyg'){
+    } else if(mType == 'wb'){
         patientList[pid].last_oxyg = update.data;
         
         //Check if alert is needed
@@ -118,14 +122,15 @@ function recievePatientUpdate(update) {
 function sendAlert(pid, type, update) {
     //Prepare to send Alert
     
-    
     //Check if room is already open
     if(!openRooms.hasOwnProperty(pid)){
+        //open room
         openRooms[pid] = io.of('/' + pid);
+        console.log('opening room: ' + pid);
     }
     
     var message = "ALERT: " + pid + " has a critical status for " + type;
-    
+    console.log(message);
     
     //Send to socket
     openRooms[pid].emit('alert', message);
