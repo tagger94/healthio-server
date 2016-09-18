@@ -10,6 +10,8 @@ var patientRooms = {};
 var adminRoom = io.of('/admin');
 var monitorRoom = io.of('/monitor');
 
+var spoofRoom = io.of('/spoof');
+
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/admin.html');
 });
@@ -166,3 +168,31 @@ function addMoniter(message) {
     // Update disk copy
     fs.writeFile('monitor.json', JSON.stringify(monitorList));
 }
+
+/********
+Spoof Methods
+
+Methods for creating a usable example
+*********/
+
+spoofRoom.on('connect', function(socket) {
+    console.log('Spoof connected');
+    
+    socket.on('get monitors', function(msg) {
+        //var mArr = monitorList.keys();
+        var mArr = [];
+        for(var prop in monitorList) {
+            mArr.push(prop);
+        }
+        spoofRoom.emit('spoof monitors', mArr);
+    })
+    
+    socket.on('get patients', function(msg) {
+        //var mArr = monitorList.keys();
+        var mArr = [];
+        for(var prop in patientList) {
+            mArr.push(prop);
+        }
+        spoofRoom.emit('spoof patients', mArr);
+    })
+});
