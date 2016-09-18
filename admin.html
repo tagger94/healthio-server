@@ -1,11 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>D3 Test</title>
-        <script src="https://d3js.org/d3.v4.min.js"></script>
-    </head>
-    <body>
-        <script type="text/javascript" src="admin.js"></script>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <title>D3 Test</title>
+    <style>
+        body {
+            background-color: #f9e8d2;
+            color: black;
+        }
+        
+        h1 {
+            color: #0d0d0d;
+            font-family: 'Trocchi', serif;
+            font-size: 45px;
+            font-weight: normal;
+            line-height: 48px;
+            margin: 0;
+        }
+        
+        hr {
+            color: #4d4d4d;
+            height: 12px;
+            border: 0;
+            box-shadow: inset 0 12px 12px -12px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <h1 align="center">Patient Data</h1>
+    <hr>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    
+    <div id="svg_background"></div>
+    
+    <script type="text/javascript">
+        var socket = io('/admin');
+        socket.on('connect', function() {
+            socket.emit('request patient list', "");
+
+            socket.on('patient list', usePatientList)
+        })
+
+        function usePatientList(patientList) {
+
+            var patientID = [];
+
+            for (var i in patientList) {
+                patientID.push(i);
+            }
+
+            console.log(patientID);
+
+            var label = [];
+            label.push("p_ID")
+            for (var i in patientList[patientID[0]]) {
+                label.push(i);
+            }
+
+            var patientData = [];
+            var rowOfData = [];
+            //Loop for patientList
+            for (var patient in patientList) {
+                var patientDataList = patientList[patient];
+
+                //Reset arr2
+                rowOfData = [];
+                for (var listElement in patientDataList) {
+                    var dataLabels = patientDataList[listElement];
+
+                    rowOfData.push(dataLabels);
+                }
+                //push arr2 into arr1
+                patientData.push(rowOfData);
+            }
+
+            console.log(patientData);
+            console.log(label);
+
+            var boxWidth = 100;
+            var boxHeight = 50;
+            var space = 5;
+            var totalWidth = boxWidth * (1 + label.length) + (space * 1 + label.length);
+            var totalHeight = boxHeight * (1 + patientID.length) + (space * 1 + patientID.length);
+
+            var pad = 5;
+            var textPad = 5;
+
+            var svg = d3.select("body")
+                            .select("#svg_background")
+                                .append("svg")
+                                .attr("x", totalWidth + 5)
+                                .attr("y", totalHeight + 5)
+                                .attr("width", totalWidth)
+                                .attr("height", totalHeight);
+
+
+            var rects = svg.selectAll("rect")
+                .data(label)
+                .enter()
+                .append("rect")
+                    .attr("x", function(d, i) {
+                        return (((i * boxWidth) + (i * space)) + pad);
+                    })
+                    .attr("y", pad)
+                    .attr("width", boxWidth)
+                    .attr("height", boxHeight)
+                    .attr("fill", "#CD853F")
+                    .attr("stroke", "#333333")
+                    .attr("fill-opacity", ".75")
+                    .attr("stroke-width", "3px");
+                    
+            var textLabel = svg.selectAll("text")
+                    .data(label)
+                    .enter()
+                    .append("text")
+                    .text(function(d){return d;})
+                    .attr("x", function(d, i) {
+                            return (((i * boxWidth) + (i * space)) + pad + textPad);
+                            })
+                    .attr("y", (.25 * boxHeight))
+                    .attr("fill", "black")
+                    .attr("stroke", "black")
+                    .attr("font-size", "16")
+                    .attr("alignment-baseline", "middle")
+                    .attr("font-style", "Arial Black");
+                
+            var PID_rects = svg.selectAll("rect")
+                .data(patientID)
+                .enter()
+                .append("rect")
+                    .attr("x", pad)
+                    .attr("y", function(d, i) {
+                        return ((((i + 1) * boxHeight) + ((i + 1) * space)) + pad);
+                    })
+                    .attr("width", boxWidth)
+                    .attr("height", boxHeight)
+                    .attr("fill", "#CD853F")
+                    .attr("stroke", "#333333")
+                    .attr("fill-opacity", ".75")
+                    .attr("stroke-width", "3px");
+                    
+                var pID_Rects = svg.selectAll("rect")
+                    .data(label)
+                    .enter()
+                    .append("rect")
+                        .attr("x", function(d, i) {
+                            return (((i * boxWidth) + (i * space)) + pad);
+                        })
+                    .attr("y", pad)
+                    .attr("width", boxWidth)
+                    .attr("height", boxHeight)
+                    .attr("fill", "#CD853F")
+                    .attr("stroke", "#333333")
+                    .attr("fill-opacity", ".75")
+                    .attr("stroke-width", "3px");
+                    
+            var textLabel = svg.selectAll("text")
+                .data(patientID)
+                .enter()
+                .append("text")
+                .text(function(d){return d;})
+                .attr("y", function(d, i) {
+                        return ((((i + 1) * boxWidth) + ((i + 1) * space)) + pad + textPad);
+                        })
+                .attr("x", (.25 * boxHeight))
+                .attr("fill", "black")
+                .attr("stroke", "black")
+                .attr("font-size", "16")
+                .attr("alignment-baseline", "middle")
+                .attr("font-style", "Arial Black");
+
+        }
+    </script>
+</body>
+
 </html>
