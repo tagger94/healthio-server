@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Schedule</title>
+    <style type="text/css">
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Schedule</h1>
+    <div>
+        <form>
+            Patient ID:<br>
+            <input type="text" id="pid"><br>
+        </form>
+    </div>
+    <h2>Available Hours</h2>
+    <table id='schedule'>
+
+    </table>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        var room = io('/schedule');
+
+        room.once('connect', function(socket) {
+            console.log('Schedule connected');
+            room.emit('request schedule');
+        });
+
+        room.once('recieve schedule data', recieveScheduleData);
+
+        function recieveScheduleData(data) {
+            console.log(data);
+        }
+
+        drawTable();
+
+        function drawTable() {
+            console.log("Drawing new Table");
+
+            var table = $('#schedule');
+
+            var s = "";
+            // Add Headers
+            s += "<tr>";
+            s += "<td>Time</td>";
+            s += "<td>Monday</td>";
+            s += "<td>Tuesday</td>";
+            s += "<td>Wednesday</td>";
+            s += "<td>Thursday</td>";
+            s += "<td>Friday</td>";
+            s += "</tr>";
+
+            //Add middle Data
+            for (var y = 0; y < 8; y++) {
+                // Setup Row
+                s += "<tr>";
+
+                // Add hour label
+                s += "<td>";
+                var d = y +8;
+                if (d < 12) {
+                    s += d + 'am';
+                }
+                else if (d > 12) {
+                    s += (d - 11) + 'pm';
+                }
+                else {
+                    s += d + 'pm';
+                }
+
+                s += "</td>";
+
+                //Set row values
+                for (var x = 0; x < 5; x++) {
+                    s+= "<td id='" + x + "_" + y +"'>";
+
+                    if (true) {
+                        s += "<button onClick='handleClick(" + x + ", " + y + ")'>Available</button>";
+                    }
+                    else {
+                        s += "Nope!";
+                    }
+                    
+                    s += "</td>";
+                }
+
+                // Close Row
+                s += "</tr>";
+            }
+
+            table.html(s);
+        }
+
+        function handleClick(x, y) {
+            console.log(x + ' ' + y);
+            $('#'+x+'_'+y).html("taken!");
+
+        }
+    </script>
+</body>
+
+</html>

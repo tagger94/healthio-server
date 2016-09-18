@@ -3,11 +3,16 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var patientList = require('./patient.json');
 var monitorList = require('./monitor.json');
+var fs = require('fs');
 
 var patientRooms = {};
 
 var adminRoom = io.of('/admin');
-var monitorRoom = io.of('/moniter');
+var monitorRoom = io.of('/monitor');
+
+var spoofRoom = io.of('/spoof');
+
+var scheduleRoom = io.of('/schedule');
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/admin.html');
@@ -23,6 +28,10 @@ app.get('/producer', function(req, res) {
 
 app.get('/admin', function(req, res) {
     res.sendFile(__dirname + '/admin.html');
+});
+
+app.get('/schedule', function(req, res) {
+    res.sendFile(__dirname + '/schedule.html');
 });
 
 http.listen(process.env.PORT, function() {
@@ -42,8 +51,8 @@ Producer Methods
 *********/
 monitorRoom.on('connection', function(socket) {
     console.log('Connection made to monitor');
-    
-    
+
+
     // Setup recievers
     socket.on('disconnect', function(socket) {
         console.log('Disconnected from monitor');
@@ -103,10 +112,10 @@ function createNewPatientRoom(pid) {
 
     patientRooms[pid].on('connection', function() {
         console.log("Connected to patient room");
-    })
 
-    patientRooms[pid].on('disconnect', function() {
-        console.log("disconnected to patient room");
+        patientRooms[pid].on('disconnect', function() {
+            console.log("disconnected from patient room");
+        })
     })
 }
 
@@ -114,8 +123,21 @@ function sendAlert(pid, type, update) {
     //Prepare to send Alert
     createNewPatientRoom(pid);
 
-    var message = "ALERT: " + pid + " has a critical status for " + type;
-    console.log(message);
+    //var message = "ALERT: " + pid + " has a critical status for " + type;
+    //console.log(message);
+    
+    if(type == "hb") {
+        type = "irregular Heart measurement";
+    } else if(type == "gl") {
+        type = "irregular Glucose measurement";
+    } else {
+        type = "irregular White Blood Cell count";
+    }
+    
+    var message = {
+        pid: pid,
+        type: type
+    };
 
     //Send to socket
     patientRooms[pid].emit('alert', message);
@@ -129,7 +151,7 @@ adminRoom.on('connection', function(socket) {
     console.log('Admin has connected');
 
     // send information back to admin
-    
+
     // Setup recievers
     socket.on('disconnect', function(socket) {
         console.log('Admin has disconnected');
@@ -153,9 +175,61 @@ function sendMoniterListToAdmin() {
 function addPatient(message) {
 
     patientList[message.pid] = message.data;
+    
+    // Update disk copy
+    fs.writeFile('patient.json', JSON.stringify(patientList));
 }
 
 function addMoniter(message) {
 
     monitorList[message.mid] = message.data;
+    
+    // Update disk copy
+    fs.writeFile('monitor.json', JSON.stringify(monitorList));
 }
+
+/********
+Schedule Methods
+*********/
+scheduleRoom.on('connection', function(socket) {
+    console.log('Connected to schedule');
+    
+    socket.on('request schedule', function() {
+        console.log('send data to schedule');
+        scheduleRoom.emit('recieve schedule data', []);
+    });
+    
+    socket.on('update schedule', function(date) {
+        console.log(date);
+        
+    })
+});
+
+
+/********
+Spoof Methods
+
+Methods for creating a usable example
+*********/
+
+spoofRoom.on('connect', function(socket) {
+    console.log('Spoof connected');
+    
+    socket.on('get monitors', function(msg) {
+        //var mArr = monitorList.keys();
+        var mArr = [];
+        for(var prop in monitorList) {
+            mArr.push(prop);
+        }
+        spoofRoom.emit('spoof monitors', mArr);
+    })
+    
+    socket.on('get patients', function(msg) {
+        //var mArr = monitorList.keys();
+        var mArr = [];
+        for(var prop in patientList) {
+            mArr.push(prop);
+        }
+        spoofRoom.emit('spoof patients', mArr);
+    })
+});

@@ -7,19 +7,23 @@
 </head>
 
 <body>
+    <h1>Spoof Consumer</h1>
     <div>
         <form>
             Patient ID:<br>
             <input type="text" id="pid"><br>
+            <select id="mySelect" size="8">
+            </select><br>
             <input type="submit" value="Submit">
         </form>
-    </div>
+    </div><br>
+    currently following...
+    <h2 id='roomid'>Room</h2>
     <div style='width=100%'>
         <!--<ul id="messages-normal" style='border: solid black thick; height:250px'></ul>-->
         <br>
-        <ul id="messages-alert" style='border: solid black thick; height:250px'></ul>
+        <ul id="messages-alert" style='border: solid black thick;'></ul>
     </div>
-
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -27,28 +31,43 @@
         //var socket = io();
         //var roomAlex = io('/alex');
         var room;
+        var spoof = io('/spoof');
 
         $('form').submit(function() {
-            var temp = $('#pid').val();
-            setupRoom(temp);
+            var pid = $('#pid').val();
+            
+            //If Empty then use selector option
+            if (pid == "") {
+                var e = document.getElementById("mySelect");
+                pid = e.options[e.selectedIndex].text;
+            }
+            
+            //Display pid
+            $('#roomid').text(pid);
+            
+            //Reset list view
+            $('#messages-alert').empty();
+            
+            
+            setupRoom(pid);
             return false;
         });
 
         // socket.on('message', recieveMessage);
         // room.on('alert', recieveAlert);
-        
+
         function setupRoom(roomID) {
             room = io('/' + roomID);
             console.log("set room to " + roomID);
-            
-            room.on('connect', function(msg){
+
+            room.on('connect', function(msg) {
                 console.log("Connected room to server");
             });
-            
-            room.on('disconnect', function(msg){
+
+            room.on('disconnect', function(msg) {
                 console.log("disconnect from server");
             });
-            
+
             //Setup Alert message
             room.on('alert', recieveAlert);
         }
@@ -58,6 +77,21 @@
             console.log(message);
             $('#messages-alert').append($('<li>').text(message));
         }
+
+        spoof.once('connect', function(socket) {
+    console.log("Spoof Connected");
+            spoof.emit('get patients', "please");
+        });
+
+        spoof.once('spoof patients', function(mList) {
+            // console.log(mList);
+            var x = document.getElementById("mySelect");
+            for (var i in mList) {
+                var option = document.createElement("option");
+                option.text = mList[i];
+                x.add(option);
+            }
+        });
     </script>
 </body>
 
