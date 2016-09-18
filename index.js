@@ -12,6 +12,8 @@ var monitorRoom = io.of('/monitor');
 
 var spoofRoom = io.of('/spoof');
 
+var scheduleRoom = io.of('/schedule');
+
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/admin.html');
 });
@@ -26,6 +28,10 @@ app.get('/producer', function(req, res) {
 
 app.get('/admin', function(req, res) {
     res.sendFile(__dirname + '/admin.html');
+});
+
+app.get('/schedule', function(req, res) {
+    res.sendFile(__dirname + '/schedule.html');
 });
 
 http.listen(process.env.PORT, function() {
@@ -108,7 +114,7 @@ function createNewPatientRoom(pid) {
         console.log("Connected to patient room");
 
         patientRooms[pid].on('disconnect', function() {
-            console.log("disconnected to patient room");
+            console.log("disconnected from patient room");
         })
     })
 }
@@ -117,8 +123,21 @@ function sendAlert(pid, type, update) {
     //Prepare to send Alert
     createNewPatientRoom(pid);
 
-    var message = "ALERT: " + pid + " has a critical status for " + type;
-    console.log(message);
+    //var message = "ALERT: " + pid + " has a critical status for " + type;
+    //console.log(message);
+    
+    if(type == "hb") {
+        type = "irregular Heart measurement";
+    } else if(type == "gl") {
+        type = "irregular Glucose measurement";
+    } else {
+        type = "irregular White Blood Cell count";
+    }
+    
+    var message = {
+        pid: pid,
+        type: type
+    };
 
     //Send to socket
     patientRooms[pid].emit('alert', message);
@@ -168,6 +187,24 @@ function addMoniter(message) {
     // Update disk copy
     fs.writeFile('monitor.json', JSON.stringify(monitorList));
 }
+
+/********
+Schedule Methods
+*********/
+scheduleRoom.on('connection', function(socket) {
+    console.log('Connected to schedule');
+    
+    socket.on('request schedule', function() {
+        console.log('send data to schedule');
+        scheduleRoom.emit('recieve schedule data', []);
+    });
+    
+    socket.on('update schedule', function(date) {
+        console.log(date);
+        
+    })
+});
+
 
 /********
 Spoof Methods
