@@ -1,5 +1,5 @@
 /**
- * Created by jordankauffman on 9/9/16.
+ * Created by jordankauffman on 10/6/16.
  */
 
 
@@ -15,61 +15,58 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 
-// Writes data to the database.
-//function writeUserData(netID, name) {
-//    //takeSnapshot();
-//    //var name = document.getElementById("student_name").value;
-//    //var netID = document.getElementById("netID").value;
-//    if(netID != "" && netID != null && name != "" && name != null)
-//    {
-//        database.ref('users/Professor/' + netID).set({
-//            last_seen: getDate(),
-//            name: name
-//        });
-//    }
-//
-//
-//
-//}
+// Writes data to the root of the patient. I am hoping that this works and doesn't ruin the object
+function createPatient(patientID, city, state, street, zip, name, dob, gender, height, weight, insurance, location, provider ) {
 
-// Retrieves data from the Database. Organized by student id
-//function retrieveUserData(netID, onCall){
-//    //var netID = document.getElementById("netID").value;
-//    var data = firebase.database().ref('users/Professor/' + netID);
-//    data.on('value', onCall);
-//}
+    var addressDict = {
+        "City" : city,
+        "State" : state,
+        "Street" : street,
+        "Zip" : zip
+    };
 
-// Tested and works. Change the path to the correct student id, then it is good to go.
-//function updateLastSeenDate(netID)
-//{
-//    //var netID = document.getElementById("netID").value;
+    database.ref('Patients/' + patientID + '/').set({
+        Address : addressDict,
+        Name : name,
+        DOB : dob,
+        Gender : gender,
+        Height : height,
+        Weight : weight,
+        Insurance : insurance,
+        Location : location,
+        Provider : provider
+    });
+}
+
+
+// Retrieves data from the Database. key will need to be a path if it is going into a dictionary within the object
+function retrieveUserData(patientID, key, onCall){
+
+    var data = firebase.database().ref('Patients/' + patientID + '/' + key);
+    data.on('value', onCall);
+}
+
+
+//This function below is the firebase example of updating values in the DB
+
+//function writeNewPost(uid, username, picture, title, body) {
+//    // A post entry.
+//    var postData = {
+//        author: username,
+//        uid: uid,
+//        body: body,
+//        title: title,
+//        starCount: 0,
+//        authorPic: picture
+//    };
 //
+//    // Get a key for a new Post.
+//    var newPostKey = firebase.database().ref().child('posts').push().key;
+//
+//    // Write the new post's data simultaneously in the posts list and the user's post list.
 //    var updates = {};
+//    updates['/posts/' + newPostKey] = postData;
+//    updates['/user-posts/' + uid + '/' + newPostKey] = postData;
 //
-//    updates['users/Professor/' + netID + '/last_seen'] = getDate();
-//
-//    database.ref().update(updates);
-//
-//    return true;
-//}
-
-//// borrowed from http://stackoverflow.com/questions/1531093/how-to-get-current-date-in-javascript
-//function getDate()
-//{
-//    var today = new Date();
-//    var dd = today.getDate();
-//    var mm = today.getMonth()+1; //January is 0!
-//    var yyyy = today.getFullYear();
-//
-//    if(dd<10) {
-//        dd = '0' + dd
-//    }
-//
-//    if(mm<10) {
-//        mm = '0' + mm
-//    }
-//
-//    today = mm + '/' + dd + '/' + yyyy;
-//    return today;
-//
+//    return firebase.database().ref().update(updates);
 //}
