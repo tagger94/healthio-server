@@ -74,8 +74,9 @@
 
 
         function recieveAlert(message) {
+            var s = message.pid + ': ' + message.type; 
             console.log(message);
-            $('#messages-alert').append($('<li>').text(message));
+            $('#messages-alert').append($('<li>').text(s));
         }
 
         spoof.once('connect', function(socket) {

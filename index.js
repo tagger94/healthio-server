@@ -84,15 +84,15 @@ function recievePatientUpdate(update) {
         patientList[pid].last_gluc = update.data;
 
         //Check if alert is needed
-        if (update.data > patientList[pid].crit_gluc) {
+        if (update.data > patientList[pid].crit_high_gluc || update.data < patientList[pid].crit_low_gluc) {
             sendAlert(pid, mType, update);
         }
     }
     else if (mType == 'wb') {
-        patientList[pid].last_oxyg = update.data;
+        patientList[pid].last_wbc = update.data;
 
         //Check if alert is needed
-        if (update.data > patientList[pid].crit_oxyg) {
+        if (update.data > patientList[pid].crit_high_wbc || update.data < patientList[pid].crit_low_wbc) {
             sendAlert(pid, mType, update);
         }
     }
