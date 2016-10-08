@@ -11,11 +11,27 @@ var adminRoom = io.of('/admin');
 var monitorRoom = io.of('/monitor');
 
 var spoofRoom = io.of('/spoof');
-
 var scheduleRoom = io.of('/schedule');
 
+//Home page 
+//TODO add log in system and apply to all connnected pages with acces to data.
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/admin.html');
+    res.sendFile(__dirname + '/client/home.html');
+});
+
+//Log in screen
+app.get('/client/views/login', function(req, res) {
+    res.sendFile(__dirname + '/client/views/login.html');
+});
+
+//Add/Remove/View patient 
+app.get('/client/views/patient', function(req, res) {
+    res.sendFile(__dirname + '/client/views/patient.html');
+});
+
+//Add/Remove/View billing
+app.get('/client/views/billing', function(req, res) {
+    res.sendFile(__dirname + '/client/views/billing.html');
 });
 
 app.get('/consumer', function(req, res) {
@@ -26,9 +42,7 @@ app.get('/producer', function(req, res) {
     res.sendFile(__dirname + '/producer.html');
 });
 
-app.get('/admin', function(req, res) {
-    res.sendFile(__dirname + '/admin.html');
-});
+
 
 app.get('/schedule', function(req, res) {
     res.sendFile(__dirname + '/schedule.html');
