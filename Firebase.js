@@ -42,8 +42,55 @@ function createPatient(patientID, city, state, street, zip, name, dob, gender, h
 // Retrieves data from the Database. key will need to be a path if it is going into a dictionary within the object
 function retrieveUserData(patientID, key, onCall){
 
-    var data = firebase.database().ref('Patients/' + patientID + '/' + key);
+    var data = database.ref('Patients/' + patientID + '/' + key);
     data.on('value', onCall);
+}
+
+function getAllPatientNames(){
+
+    return database.ref('Patients/').once('value').then(function(snapshot) {
+        var val = snapshot.val();
+
+        var label = [];
+        for(var i in val){
+            label.push(i);
+        }
+
+        var name = [];
+        for(var i = 0; i < label.length;i++) {
+            console.log(i);
+            name.push(val[label[i]].Name);
+        }
+
+        console.log(name);
+
+    });
+
+}
+
+function getBasicPatientInfo() {
+    return database.ref('Patients/').once('value').then(function(snapshot) {
+        var val = snapshot.val();
+
+        var label = [];
+        for(var i in val){
+            label.push(i);
+        }
+
+        var list = [];
+        for(var i = 0; i < label.length;i++) {
+            console.log(i);
+            var obj = {
+                'pid' : val[label[i]],
+                'name' : val[label[i]].Name
+            };
+
+            list.push(obj);
+        }
+
+        console.log(list);
+
+    });
 }
 
 
