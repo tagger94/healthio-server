@@ -38,16 +38,17 @@
     <table id="theTable" width="100%">
         <tr>
             <td width="50%">
-                <h1 align="center">Add Patient</h1>
+                <h1 align="top">Add Patient</h1>
             </td>
             <td id="patient" width="50%">
-                <h1 align="center">Patient List</h1>
+                <h1 align="top">Patient List</h1>
                 <div id="patientListView">
 
                 </div>
                 <form name="myForm" action="demo_form.asp" onsubmit="return validateForm()">
                     Name: <input type="text" name="valid">
                     <input id="removeButton" type="submit" value="Remove">
+                    <input id="viewDataButton" type="submit" value="View Data">
                 </form>
             </td>
         </tr>
@@ -109,19 +110,32 @@
                 names.push(patientData[i][0]);
             }
 
+            console.log(names);
+
             var patlistview = d3.select("body")
-                                .select("#theTable")
-                                .select("tr")
-                                .select("#patient")
-                                .select("#patientListView");
+                .select("#theTable")
+                .select("tbody")
+                .select("tr")
+                .select("#patient")
+                .select("#patientListView")
+                .append("p")
+                .selectAll("p");
 
-            patlistview.data(names)
-                        .enter()
-                        .append("p")
-                        .text(function(d, i) {
-                                return d
-                            });
+            function redrawList() {
+                patlistview.data(names, function(d, i) {
+                        return d + i;
+                    })
+                    .enter()
+                    .append("p")
+                    .text(function(d, i) {
+                        return i + ". " + d;
+                    });
+            }
 
+            redrawList();
+
+            names.push("Mike");
+            //redrawList();
 
             function validateForm() {
                 var x = document.forms["myForm"]["valid"].value;
