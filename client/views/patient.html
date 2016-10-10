@@ -36,21 +36,29 @@
     <h1 align="center">Patient Data</h1>
     <hr>
     <table id="theTable" width="100%">
-        <tr>
+        <tr id="tableHeader">
+            <td>
+                <h1 align="center">Add Patient</h1>
+            </td>
+            <td>
+                <h1 align="center">Patient List</h1>
+            </td>
+        </tr>
+        <tr id="tableRow">
             <td width="50%">
-                <h1 align="top">Add Patient</h1>
             </td>
             <td id="patient" width="50%">
-                <h1 align="top">Patient List</h1>
                 <div id="patientListView">
 
                 </div>
                 <form name="myForm" action="demo_form.asp" onsubmit="return validateForm()">
-                    Name: <input type="text" name="valid">
-                    <input id="removeButton" type="submit" value="Remove">
+                    Name: <input id = "textIn" type="text" name="valid">
                     <input id="viewDataButton" type="submit" value="View Data">
                 </form>
             </td>
+        </tr>
+        <tr>
+
         </tr>
     </table>
 
@@ -105,6 +113,7 @@
 
             console.log(patientData);
 
+            //will be from firebase eventually
             var names = [];
             for (var i = 0; i < patientData.length; i++) {
                 names.push(patientData[i][0]);
@@ -115,20 +124,24 @@
             var patlistview = d3.select("body")
                 .select("#theTable")
                 .select("tbody")
-                .select("tr")
+                .select("#tableRow")
                 .select("#patient")
                 .select("#patientListView")
                 .append("p")
                 .selectAll("p");
 
             function redrawList() {
-                patlistview.data(names, function(d, i) {
+                patlistview
+                    .data(names, function(d, i) {
                         return d + i;
                     })
                     .enter()
                     .append("p")
                     .text(function(d, i) {
                         return i + ". " + d;
+                    })
+                    .on("click", function(d){
+                        document.getElementById("textIn").value = d;
                     });
             }
 
