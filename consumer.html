@@ -23,6 +23,14 @@
         <!--<ul id="messages-normal" style='border: solid black thick; height:250px'></ul>-->
         <br>
         <ul id="messages-alert" style='border: solid black thick;'></ul>
+        <div class="boxed" style = 'border: 1px solid blue; width : 300px; height : 220px;'>
+        <h3> Patient data</h3>
+        <p id = "patientName">Name: </p>
+        <p id = "patientHeight">Height: </p>
+        <p id = "patientWeight">Weight: </p>
+        <p id = "patientGender">Gender: </p>
+        <p id = "patientStatus">Status: </p>
+    </div>
     </div>
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -32,9 +40,10 @@
         //var roomAlex = io('/alex');
         var room;
         var spoof = io('/spoof');
+        var pid;
 
         $('form').submit(function() {
-            var pid = $('#pid').val();
+            pid = $('#pid').val();
             
             //If Empty then use selector option
             if (pid == "") {
@@ -50,16 +59,18 @@
             
             
             setupRoom(pid);
+            requestPatientData(pid);
+                        
             return false;
         });
 
-        // socket.on('message', recieveMessage);
-        // room.on('alert', recieveAlert);
+       //  socket.on('message', recieveMessage);
+       //  room.on('alert', recieveAlert);
 
         function setupRoom(roomID) {
             room = io('/' + roomID);
             console.log("set room to " + roomID);
-
+         //   room.emit('connect', pid);
             room.on('connect', function(msg) {
                 console.log("Connected room to server");
             });
@@ -68,22 +79,41 @@
                 console.log("disconnect from server");
             });
 
+
             //Setup Alert message
             room.on('alert', recieveAlert);
+            //get /  room.on('patient data', recievePatientData);
+        }
+        
+        function requestPatientData(pid) {
+            $('#patientStatus').text("Status: ")
+            spoof.emit("get patient data", pid);
+            
+                      //get patient data
+            spoof.on('patient data', recievePatientData);
         }
 
 
         function recieveAlert(message) {
-            var s = message.pid + ': ' + message.type; 
+            var s = "Status : " +  message.type; 
             console.log(message);
-            $('#messages-alert').append($('<li>').text(s));
+            if(pid == message.pid){
+                $('#patientStatus').text(s);
+            }
+        }
+        
+        function recievePatientData(data) { /// add panel for user data
+            $('#patientName').text("Name: " + data.name);
+            $('#patientHeight').text("Height: " + data.height);
+            $('#patientWeight').text("Weight: " + data.weight);
+            $('#patientGender').text("Gender: " + data.gender);
         }
 
         spoof.once('connect', function(socket) {
-    console.log("Spoof Connected");
+        console.log("Spoof Connected");
             spoof.emit('get patients', "please");
         });
-
+        
         spoof.once('spoof patients', function(mList) {
             // console.log(mList);
             var x = document.getElementById("mySelect");
