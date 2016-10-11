@@ -29,20 +29,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Firebase.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Firebase.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Firebase.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5670996">
-              <caret line="84" column="37" selection-start-line="84" selection-start-column="37" selection-end-line="84" selection-end-column="37" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DBTest.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DBTest.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DBTest.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-18.125">
+            <state vertical-scroll-proportion="0.6502242">
               <caret line="29" column="68" selection-start-line="29" selection-start-column="68" selection-end-line="29" selection-end-column="68" />
               <folding />
             </state>
@@ -230,12 +230,12 @@
       <option name="number" value="Default" />
       <updated>1475785628597</updated>
       <workItem from="1475785634718" duration="8922000" />
-      <workItem from="1476038133257" duration="4803000" />
+      <workItem from="1476038133257" duration="4897000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13725000" />
+    <option name="totallyTimeSpent" value="13819000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="813" extended-state="0" />
@@ -290,18 +290,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DBTest.html">
+    <entry file="file://$PROJECT_DIR$/Firebase.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.125">
-          <caret line="29" column="68" selection-start-line="29" selection-start-column="68" selection-end-line="29" selection-end-column="68" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Firebase.js">
+    <entry file="file://$PROJECT_DIR$/DBTest.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5670996">
-          <caret line="84" column="37" selection-start-line="84" selection-start-column="37" selection-end-line="84" selection-end-column="37" />
+        <state vertical-scroll-proportion="0.6502242">
+          <caret line="29" column="68" selection-start-line="29" selection-start-column="68" selection-end-line="29" selection-end-column="68" />
           <folding />
         </state>
       </provider>
