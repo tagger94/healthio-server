@@ -10,14 +10,18 @@
     <script src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
     <script src="Firebase.js"></script>
 
-    <script></script>
     <button type="button" onclick="createPatient('987654321', 'nowheresville', 'Hawaii', '1234 s 10th st', '10001',
 'John J Johnson', '11-11-1911', 'M', '72', '160', 'UnitedHealthcare', '12W11', 'Dr. Stevens')">Create Patient</button>
 
     <button type="button" onclick="updatePatientInfo('987654321', 'Name', 'Bill D Miller')">Update Patient</button>
 
-    <button type="button" onclick="test">Print Patients</button>
-    <script type="text/javascript" src="">
+    <button type="button" onclick="getBasicPatientInfo()">Basic Info</button>
+
+    <button type="button" onclick="retrieveUserData()">Retrieve</button>
+
+    <button type="button" onclick="test()">Print Patients</button>
+
+    <script type="text/javascript">
     
         function test() {
             getAllPatientNames(testCallBack);
