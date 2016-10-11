@@ -46,9 +46,9 @@ function retrieveUserData(patientID, key, onCall){
     data.on('value', onCall);
 }
 
-function getAllPatientNames(){
+function getAllPatientNames(onCall){
 
-    return database.ref('Patients/').once('value').then(function(snapshot) {
+    return database.ref('Patients/').once('value').then(function(snapshot, onCall) {
         var val = snapshot.val();
 
         var label = [];
@@ -62,7 +62,8 @@ function getAllPatientNames(){
             name.push(val[label[i]].Name);
         }
 
-        console.log(name);
+        //console.log(name);
+        onCall(name);
 
     });
 
@@ -81,7 +82,7 @@ function getBasicPatientInfo() {
         for(var i = 0; i < label.length;i++) {
             console.log(i);
             var obj = {
-                'pid' : val[label[i]],
+                'pid' : label[i],
                 'name' : val[label[i]].Name
             };
 

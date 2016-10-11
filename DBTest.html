@@ -16,7 +16,13 @@
 
 <button type="button" onclick="updatePatientInfo('987654321', 'Name', 'Bill D Miller')">Update Patient</button>
 
-<button type="button" onclick="getBasicPatientInfo()">Print Patients</button>
+<button type="button" onclick="getAllPatientNames(testCallBack)">Print Patients</button>
+<script type="text/javascript" src="">
+    function testCallBack(data) {
+        console.log("CALL BACK");
+    console.log(data);
+}
+</script>
 
 </body>
 
