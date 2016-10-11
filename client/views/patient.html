@@ -48,11 +48,8 @@
             <td width="50%">
             </td>
             <td id="patient" width="50%">
-                <div id="patientListView">
-
-                </div>
                 <form name="myForm" action="demo_form.asp" onsubmit="return validateForm()">
-                    Name: <input id = "textIn" type="text" name="valid">
+                    Name: <input id="textIn" type="text" name="valid">
                     <input id="viewDataButton" type="submit" value="View Data">
                 </form>
             </td>
@@ -74,8 +71,6 @@
 
 
         function usePatientList(patientList) {
-
-
 
             //List of patient IDs.
             var patientID = [];
@@ -111,7 +106,7 @@
                 patientData.push(rowOfData);
             }
 
-            console.log(patientData);
+            //console.log(patientData);
 
             //will be from firebase eventually
             var names = [];
@@ -119,36 +114,19 @@
                 names.push(patientData[i][0]);
             }
 
-            console.log(names);
+            //console.log(names);
 
             var patlistview = d3.select("body")
                 .select("#theTable")
                 .select("tbody")
                 .select("#tableRow")
                 .select("#patient")
-                .select("#patientListView")
-                .append("p")
-                .selectAll("p");
-
-            function redrawList() {
-                patlistview
-                    .data(names, function(d, i) {
-                        return d + i;
-                    })
-                    .enter()
-                    .append("p")
-                    .text(function(d, i) {
-                        return i + ". " + d;
-                    })
-                    .on("click", function(d){
-                        document.getElementById("textIn").value = d;
-                    });
-            }
+                .append("div")
+                    .attr("id","patientListView")
+                    .attr("class","patientListViewEmpty")
+                .append("p");
 
             redrawList();
-
-            names.push("Mike");
-            //redrawList();
 
             function validateForm() {
                 var x = document.forms["myForm"]["valid"].value;
@@ -156,8 +134,33 @@
                     alert("Name must be filled out");
                     return false;
                 }
-
                 return true;
+            }
+            
+            function redrawList() {
+                //$(".patientListViewEmpty").empty();
+                
+                d3.select("body")
+                    .select("#theTable")
+                    .select("tbody")
+                    .select("#tableRow")
+                    .select("#patient")
+                    .select()
+                        .html("");
+                
+                
+                patlistview.selectAll("p")
+                    .data(names, function(d, i) {
+                        return d + i;
+                    })
+                    .enter()
+                    .append("p")
+                    .text(function(d, i) {
+                        return patientID[i] + ": " + d;
+                    })
+                    .on("click", function(d, i) {
+                        document.getElementById("textIn").value = patientID[i];
+                    });
             }
         }
     </script>
