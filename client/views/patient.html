@@ -70,10 +70,12 @@
         })
 
 
+var names = [];
+var patientID = [];
         function usePatientList(patientList) {
 
             //List of patient IDs.
-            var patientID = [];
+            
 
             for (var i in patientList) {
                 patientID.push(i);
@@ -109,29 +111,23 @@
             //console.log(patientData);
 
             //will be from firebase eventually
-            var names = [];
+            
             for (var i = 0; i < patientData.length; i++) {
                 names.push(patientData[i][0]);
             }
 
             //console.log(names);
 
-            var patlistview = d3.select("body")
-                .select("#theTable")
-                .select("tbody")
-                .select("#tableRow")
-                .select("#patient")
-                .append("div")
-                    .attr("id","patientListView")
-                    .attr("class","patientListViewEmpty")
-                .append("p");
+            
 
             redrawList();
 
             function validateForm() {
                 var x = document.forms["myForm"]["valid"].value;
                 if (x == null || x == "") {
-                    alert("Name must be filled out");
+             
+        }
+               alert("Name must be filled out");
                     return false;
                 }
                 return true;
@@ -140,6 +136,16 @@
             function redrawList() {
                 //$(".patientListViewEmpty").empty();
                 
+                var patlistview = d3.select("body")
+                .select("#theTable")
+                .select("tbody")
+                .select("#tableRow")
+                .select("#patient")
+                .append("div")
+                    .attr("id","patientListView")
+                    .attr("class","patientListViewEmpty")
+                .append("p");
+                
                 d3.select("body")
                     .select("#theTable")
                     .select("tbody")
@@ -147,7 +153,6 @@
                     .select("#patient")
                     .select()
                         .html("");
-                
                 
                 patlistview.selectAll("p")
                     .data(names, function(d, i) {
@@ -162,7 +167,6 @@
                         document.getElementById("textIn").value = patientID[i];
                     });
             }
-        }
     </script>
 </body>
 
