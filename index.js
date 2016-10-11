@@ -56,7 +56,7 @@ http.listen(process.env.PORT, function() {
 /********
 Default Methods
 *********/
-io.on('connect', function(socket) {
+io.on('connect', function(msg) {
     console.log('new client connected');
 })
 
@@ -88,7 +88,7 @@ function recievePatientUpdate(update) {
     //Send to database for updating
     if (mType == 'hb') {
         patientList[pid].last_heart = update.data;
-
+        
         //Check if alert is needed
         if (update.data > patientList[pid].crit_high_heart || update.data < patientList[pid].crit_low_heart) {
             sendAlert(pid, mType, update);
@@ -116,29 +116,41 @@ function recievePatientUpdate(update) {
 Consumer Methods
 *********/
 
+    
 function createNewPatientRoom(pid) {
     //Check if room is already open
     if (!patientRooms.hasOwnProperty(pid)) {
         //open room
+        console.log("object: " + pid.stringify);
         patientRooms[pid] = io.of('/' + pid);
         console.log('opening room: ' + pid);
     }
+    patientRooms[pid].on('get patient data', sendPatientDataToConsumer);
 
-    patientRooms[pid].on('connection', function() {
+    patientRooms[pid].on('connect', function() {
         console.log("Connected to patient room");
 
         patientRooms[pid].on('disconnect', function() {
             console.log("disconnected from patient room");
         })
+    
     })
+}
+
+function sendPatientDataToConsumer(pid) {
+    console.log("-----------------Made it into funciton")
+  // patientRooms[pid].emit('patient data', patientList[pid]);
+   return(patientList[pid]);
+  //spoof.emit(patientRooms[pid])
+    
 }
 
 function sendAlert(pid, type, update) {
     //Prepare to send Alert
     createNewPatientRoom(pid);
 
-    //var message = "ALERT: " + pid + " has a critical status for " + type;
-    //console.log(message);
+    var message = "ALERT: " + pid + " has a critical status for " + type;
+    console.log(message);
     
     if(type == "hb") {
         type = "irregular Heart measurement";
@@ -147,7 +159,6 @@ function sendAlert(pid, type, update) {
     } else {
         type = "irregular White Blood Cell count";
     }
-    
     var message = {
         pid: pid,
         type: type
@@ -246,4 +257,9 @@ spoofRoom.on('connect', function(socket) {
         }
         spoofRoom.emit('spoof patients', mArr);
     })
+    socket.on('get patient data', function(msg) {
+       spoofRoom.emit('patient data', sendPatientDataToConsumer(msg));
+    });
+    
+    
 });
