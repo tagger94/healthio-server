@@ -5,8 +5,6 @@ var patientList = require('./patient.json');
 var monitorList = require('./monitor.json');
 var fs = require('fs');
 
-var FB = require("./Firebase.js");
-
 var patientRooms = {};
 
 var adminRoom = io.of('/admin');
@@ -44,6 +42,8 @@ app.get('/producer', function(req, res) {
     res.sendFile(__dirname + '/producer.html');
 });
 
+
+
 app.get('/schedule', function(req, res) {
     res.sendFile(__dirname + '/schedule.html');
 });
@@ -64,11 +64,12 @@ io.on('connect', function(msg) {
 Producer Methods
 *********/
 monitorRoom.on('connection', function(socket) {
-    console.log('Connection made to producer');
+    console.log('Connection made to monitor');
+
 
     // Setup recievers
     socket.on('disconnect', function(socket) {
-        console.log('Disconnected from producer');
+        console.log('Disconnected from monitor');
     });
 
     socket.on('patient update', recievePatientUpdate);
@@ -76,109 +77,95 @@ monitorRoom.on('connection', function(socket) {
 
 function recievePatientUpdate(update) {
     //Patient Data is recieved
-    console.log("Producer delivered: " + update.mid + ' - ' + update.data);
+    //console.log(update.mid + ': ' + update.data);
 
-    //Grab MID
-    //Get PID from MID
-    var event = new Event(update.mid, update.data);
+    var mid = update.mid;
+    var mType = mid.slice(0, 2);
+    var pid = monitorList[mid].pid;
 
-    //console.log(event);
-
-    //Use for later verison
-
-    FB.retrieveUserData(event.pid, "Last_Sensor_Value", function(snapshot){event.handlePatient(snapshot)});
-    // event.handlePatient();
+    console.log("Update from " + mid + ' for ' + pid + ': ' + update.data);
 
     //Send to database for updating
-    // event.handleUpdate();
-
-}
-
-function Event(mid, data) {
-    console.log('---Event Made!!!!');
-    this.mid = mid;
-    this.pid = "123456789";
-    this.patient = null;
-    this.data = data;
-    this.handlePatient = function(snapshot) {
-        if (snapshot) {
-            this.patient = snapshot.val();
-            console.log("Last Data Point: " + this.patient);
+    if (mType == 'hb') {
+        patientList[pid].last_heart = update.data;
+        
+        //Check if alert is needed
+        if (update.data > patientList[pid].crit_high_heart || update.data < patientList[pid].crit_low_heart) {
+            sendAlert(pid, mType, update);
         }
+    }
+    else if (mType == 'gl') {
+        patientList[pid].last_gluc = update.data;
 
-        //Send to database for updating
-        FB.updatePatientInfo(this.pid, "Last_Sensor_Value", this.data);
-    };
+        //Check if alert is needed
+        if (update.data > patientList[pid].crit_high_gluc || update.data < patientList[pid].crit_low_gluc) {
+            sendAlert(pid, mType, update);
+        }
+    }
+    else if (mType == 'wb') {
+        patientList[pid].last_wbc = update.data;
 
-
-
+        //Check if alert is needed
+        if (update.data > patientList[pid].crit_high_wbc || update.data < patientList[pid].crit_low_wbc) {
+            sendAlert(pid, mType, update);
+        }
+    }
 };
-
-// Event.prototype.handlePatient = function(snapshot) {
-//         this.patient = snapshot.val();
-//         console.log(this);
-
-//         //Send to database for updating
-//         FB.updatePatientInfo(this.pid, "Last_Sensor_Value", this.data);
-//     };
 
 /********
 Consumer Methods
 *********/
 
+    
 function createNewPatientRoom(pid) {
-    console.log("Attempt to setup patient room");
-
     //Check if room is already open
     if (!patientRooms.hasOwnProperty(pid)) {
         //open room
+        console.log("object: " + pid.stringify);
         patientRooms[pid] = io.of('/' + pid);
         console.log('opening room: ' + pid);
-
-        //Setup listeners
-        patientRooms[pid].on('connection', function(socket) {
-            console.log('Connection made to consumer');
-
-            socket.on('get patient data', requestForPatientData);
-
-            socket.on('disconnect', function() {
-                console.log("disconnected from consumer room");
-            })
-        })
     }
+    patientRooms[pid].on('get patient data', sendPatientDataToConsumer);
+
+    patientRooms[pid].on('connect', function() {
+        console.log("Connected to patient room");
+
+        patientRooms[pid].on('disconnect', function() {
+            console.log("disconnected from patient room");
+        })
+    
+    })
 }
 
-function requestForPatientData(pid) {
-
-    //Setup Object for binding
-    var obj = {
-        pid: pid,
-        sendToConsumer: function(patient) {
-            console.log("Sending patient data to consumer");
-            patientRooms[this.pid].emit("send patient data");
-        }
-    };
-
-
-    //Call DB and set callback method
-    FB.retrieveUserData(pid, "", obj.sendToConsumer);
+function sendPatientDataToConsumer(pid) {
+    console.log("-----------------Made it into funciton")
+  // patientRooms[pid].emit('patient data', patientList[pid]);
+   return(patientList[pid]);
+  //spoof.emit(patientRooms[pid])
+    
 }
 
-function sendUpdate(pid, type, update) {
-    console.log('Sending update data to consumer');
-
-    //Prepare to send update
+function sendAlert(pid, type, update) {
+    //Prepare to send Alert
     createNewPatientRoom(pid);
 
-    //Create message to send
+    var message = "ALERT: " + pid + " has a critical status for " + type;
+    console.log(message);
+    
+    if(type == "hb") {
+        type = "irregular Heart measurement";
+    } else if(type == "gl") {
+        type = "irregular Glucose measurement";
+    } else {
+        type = "irregular White Blood Cell count";
+    }
     var message = {
         pid: pid,
-        type: type,
-        update: update
+        type: type
     };
 
-    //Send to consumer
-    patientRooms[pid].emit('alert', message); //TODO change to message later
+    //Send to socket
+    patientRooms[pid].emit('alert', message);
 }
 
 /********
@@ -213,7 +200,7 @@ function sendMoniterListToAdmin() {
 function addPatient(message) {
 
     patientList[message.pid] = message.data;
-
+    
     // Update disk copy
     fs.writeFile('patient.json', JSON.stringify(patientList));
 }
@@ -221,7 +208,7 @@ function addPatient(message) {
 function addMoniter(message) {
 
     monitorList[message.mid] = message.data;
-
+    
     // Update disk copy
     fs.writeFile('monitor.json', JSON.stringify(monitorList));
 }
@@ -231,15 +218,15 @@ Schedule Methods
 *********/
 scheduleRoom.on('connection', function(socket) {
     console.log('Connected to schedule');
-
+    
     socket.on('request schedule', function() {
         console.log('send data to schedule');
         scheduleRoom.emit('recieve schedule data', []);
     });
-
+    
     socket.on('update schedule', function(date) {
         console.log(date);
-
+        
     })
 });
 
@@ -252,27 +239,27 @@ Methods for creating a usable example
 
 spoofRoom.on('connect', function(socket) {
     console.log('Spoof connected');
-
+    
     socket.on('get monitors', function(msg) {
         //var mArr = monitorList.keys();
         var mArr = [];
-        for (var prop in monitorList) {
+        for(var prop in monitorList) {
             mArr.push(prop);
         }
         spoofRoom.emit('spoof monitors', mArr);
     })
-
+    
     socket.on('get patients', function(msg) {
         //var mArr = monitorList.keys();
         var mArr = [];
-        for (var prop in patientList) {
+        for(var prop in patientList) {
             mArr.push(prop);
         }
         spoofRoom.emit('spoof patients', mArr);
     })
     socket.on('get patient data', function(msg) {
-        spoofRoom.emit('patient data', sendPatientDataToConsumer(msg));
+       spoofRoom.emit('patient data', sendPatientDataToConsumer(msg));
     });
-
-
+    
+    
 });

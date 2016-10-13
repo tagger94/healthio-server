@@ -2,6 +2,7 @@
  * Created by jordankauffman on 10/6/16.
  */
 
+var firebase = require("firebase");
 
 // Initialize Firebase
 var config = {
@@ -17,9 +18,9 @@ var database = firebase.database();
 
 var patientInfoHolder = "";
 
-
 // Writes data to the root of the patient. I am hoping that this works and doesn't ruin the object
 function createPatient(patientID, city, state, street, zip, name, dob, gender, height, weight, insurance, location, provider) {
+    console.log("Create Patient");
 
     var addressDict = {
         "City": city,
@@ -44,11 +45,10 @@ function createPatient(patientID, city, state, street, zip, name, dob, gender, h
 
 // Retrieves data from the Database. key will need to be a path if it is going into a dictionary within the object
 function retrieveUserData(patientID, key, onCall) {
+    console.log("Retrieve Patient " + patientID + "  data");
 
     var data = database.ref('Patients/' + patientID + '/' + key);
-    data.on('value', onCall);
-
-
+    data.once('value', onCall);
 }
 
 
@@ -76,9 +76,10 @@ function retrieveUserData(patientID, key, onCall) {
 //}
 
 function getAllPatientInfo(onCall) {
+    console.log("Retrieving all patient data");
 
     var data = database.ref('Patients/');
-    data.on('value', onCall);//function(data) {
+    data.once('value', onCall);//function(data) {
         //var val = data.val();
         //
         //var label = [];
@@ -133,9 +134,16 @@ function getAllPatientInfo(onCall) {
 
 
 function updatePatientInfo(patientID, value, updatedInfo) {
+    console.log("Updating " + patientID + " data with " + updatedInfo);
 
     var updates = {};
     updates['Patients/' + patientID + '/' + value] = updatedInfo;
 
     return database.ref().update(updates);
 }
+
+module.exports = {
+  createPatient: createPatient,
+  updatePatientInfo: updatePatientInfo,
+  retrieveUserData: retrieveUserData,
+};
