@@ -164,6 +164,13 @@ function requestForPatientData(pid) {
     FB.retrieveUserData(pid, "", obj.sendToConsumer);
 }
 
+function sendPatientDataToConsumer(pid) {
+  // patientRooms[pid].emit('patient data', patientList[pid]);
+   return(patientList[pid]);
+  //spoof.emit(patientRooms[pid])
+
+}
+
 function sendUpdate(pid, type, update) {
     console.log('Sending update data to consumer');
 
