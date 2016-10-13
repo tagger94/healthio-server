@@ -169,6 +169,7 @@
             
             var patientDataRow = [];
 
+            patientDataRow.push(input);
             
             if(input.length >= 4){
                 input = input.substring(input.length - 4);
@@ -185,6 +186,13 @@
             }
             
             console.log(patientDataRow);
+            
+            var result = "";
+            for(var i = 0; i < patientDataRow.length; i++){
+                result += (labels[i] + ": " + patientDataRow[i] + "\n");
+            }
+            
+            alert(result);
         }
         
         function patientExists(pid){
