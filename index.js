@@ -138,7 +138,6 @@ function createNewPatientRoom(pid) {
 }
 
 function sendPatientDataToConsumer(pid) {
-    console.log("-----------------Made it into funciton")
   // patientRooms[pid].emit('patient data', patientList[pid]);
    return(patientList[pid]);
   //spoof.emit(patientRooms[pid])

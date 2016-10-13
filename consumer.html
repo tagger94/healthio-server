@@ -3,8 +3,31 @@
 
 <head>
     <title>Consumer</title>
-
 </head>
+
+<style type="text/css">
+
+
+    .boxed {
+        background-color: lightblue;
+        border-color: black;
+        border-style: solid;
+    }
+    
+    body {
+        background-color: LightSkyBlue ;
+    }
+    
+    #lbreak {
+        border-style: solid;
+        border-color: black;
+    }
+    
+    #Pdata {
+        position:relative;
+        left: 20px;
+    }
+</style>
 
 <body>
     <h1>Spoof Consumer</h1>
@@ -17,19 +40,19 @@
             <input type="submit" value="Submit">
         </form>
     </div><br>
+    <hr id = "lbreak" size="30" color = "#0099ff">
     currently following...
     <h2 id='roomid'>Room</h2>
     <div style='width=100%'>
-        <!--<ul id="messages-normal" style='border: solid black thick; height:250px'></ul>-->
-        <br>
-        <ul id="messages-alert" style='border: solid black thick;'></ul>
-        <div class="boxed" style = 'border: 1px solid blue; width : 300px; height : 220px;'>
-        <h3> Patient data</h3>
+     <div id = "Pbox" class="boxed" style = 'width : 300px; height : 220px;'>
+        <h3><center> PATIENT DATA </center></h3>
+        <div id = "Pdata">
         <p id = "patientName">Name: </p>
         <p id = "patientHeight">Height: </p>
         <p id = "patientWeight">Weight: </p>
         <p id = "patientGender">Gender: </p>
         <p id = "patientStatus">Status: </p>
+        </div>
     </div>
     </div>
 
