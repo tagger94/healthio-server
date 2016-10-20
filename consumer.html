@@ -120,7 +120,7 @@
         function recieveAlert(message) {
             var s = "Status : " +  message.type; 
             console.log(message);
-            if(pid == message.pid){
+            if(pid == message.pid || true){
                 $('#patientStatus').text(s);
             }
         }

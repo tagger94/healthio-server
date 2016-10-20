@@ -86,7 +86,11 @@ function recievePatientUpdate(update) {
 
     //Use for later verison
 
-    FB.retrieveUserData(event.pid, "Last_Sensor_Value", function(snapshot){event.handlePatient(snapshot)});
+    FB.retrieveUserData(event.pid, "Last_Sensor_Value", function(snapshot) {
+        event.handlePatient(snapshot)
+    });
+    
+    
     // event.handlePatient();
 
     //Send to database for updating
@@ -108,6 +112,7 @@ function Event(mid, data) {
 
         //Send to database for updating
         FB.updatePatientInfo(this.pid, "Last_Sensor_Value", this.data);
+        sendUpdate(this.pid, "heart", this.data);
     };
 
 
@@ -165,9 +170,9 @@ function requestForPatientData(pid) {
 }
 
 function sendPatientDataToConsumer(pid) {
-  // patientRooms[pid].emit('patient data', patientList[pid]);
-   return(patientList[pid]);
-  //spoof.emit(patientRooms[pid])
+    // patientRooms[pid].emit('patient data', patientList[pid]);
+    return (patientList[pid]);
+    //spoof.emit(patientRooms[pid])
 
 }
 
