@@ -40,18 +40,27 @@
                 <h1 align="center">Patient List</h1>
             </td>
         </tr>
-        <tr id="tableRow">
-            <td width="50%">
+        <tr>
+            <td>
                 <form name="createForm" onsubmit="true">
-                    Patient ID: <input id="textInCreate" type="text" name="valid">
+                    Patient ID: <input id="textInID" type="text" name="valid">
+                    Patient Name: <input id="textInName" type="text" name="valid">
+                    <input id="createButton" type="button" value="Create">
                 </form>
             </td>
-            <td id="patient" width="50%">
+            <td>
                 <form name="viewForm" onsubmit="true">
                     Patient ID: <input id="textInView" type="text" name="valid">
                     <input id="viewDataButton" type="button" value="View Data">
-                    <hr>
                 </form>
+            </td>
+        </tr>
+        <tr id="tableRow">
+            <td width="50%">
+                
+            </td>
+            <td id="patient" width="50%">
+                
             </td>
         </tr>
     </table>
@@ -79,6 +88,7 @@
             if (!hasConnected) {
                 hasConnected = 1;
                 document.getElementById("viewDataButton").onclick = viewPatientData_PID;
+                document.getElementById("createButton").onclick = addPatient;
                 drawList();
             }
         }
@@ -193,6 +203,17 @@
             }
             
             alert(result);
+        }
+        
+        function addPatient(){
+            var name = document.getElementById("textInName").value;
+            var id = document.getElementById("textInID").value;
+            names.push(name);
+            patientID.push(id);
+            
+            alert("-Created Patient-\nName: " + name + "\nPID: " + id);
+            
+            redrawList();
         }
         
         function patientExists(pid){
