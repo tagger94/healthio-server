@@ -93,18 +93,6 @@
             }
         }
         
-        function drawList(){
-            d3.select("body")
-                    .select("#theTable")
-                    .select("tbody")
-                    .select("#tableRow")
-                    .select("#patient")
-                        .append("div")
-                        .attr("id", "patientListView")
-                        .attr("class", "patientListViewEmpty");
-                        
-            redrawList();
-        }
 
         function initArrays(patientList){
             //List of patient IDs.
@@ -144,6 +132,19 @@
             }
         }
 
+        function drawList(){
+            d3.select("body")
+                .select("#theTable")
+                .select("tbody")
+                .select("#tableRow")
+                .select("#patient")
+                    .append("div")
+                    .attr("id", "patientListView")
+                    .attr("class", "patientListViewEmpty");
+                        
+            redrawList();
+        }
+        
         function redrawList() {
             // Select teh patientLiseView div from the html.
             var patientView = d3.select("body")
