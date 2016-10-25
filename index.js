@@ -89,8 +89,8 @@ function recievePatientUpdate(update) {
     FB.retrieveUserData(event.pid, "Last_Sensor_Value", function(snapshot) {
         event.handlePatient(snapshot)
     });
-    
-    
+
+
     // event.handlePatient();
 
     //Send to database for updating
@@ -132,10 +132,10 @@ Consumer Methods
 *********/
 
 function createNewPatientRoom(pid) {
-    console.log("Attempt to setup patient room");
 
     //Check if room is already open
     if (!patientRooms.hasOwnProperty(pid)) {
+        console.log("Attempt to setup patient room");
         //open room
         patientRooms[pid] = io.of('/' + pid);
         console.log('opening room: ' + pid);
@@ -283,7 +283,12 @@ spoofRoom.on('connect', function(socket) {
         spoofRoom.emit('spoof patients', mArr);
     })
     socket.on('get patient data', function(msg) {
-        spoofRoom.emit('patient data', sendPatientDataToConsumer(msg));
+        //spoofRoom.emit('patient data', sendPatientDataToConsumer(msg));
+        FB.retrieveUserData(msg, "", function(snapshot) {
+            console.log('--------SEND BACK');
+            console.log(snapshot.val());
+            spoofRoom.emit('patient data', snapshot.val());
+        });
     });
 
 

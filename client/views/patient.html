@@ -71,7 +71,7 @@
         socket.on('connect', function() {
             socket.emit('request patient list', "");
 
-            socket.on('patient list', usePatientList)
+            socket.once('patient list', usePatientList)
         })
 
 

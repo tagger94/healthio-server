@@ -6,8 +6,6 @@
 </head>
 
 <style type="text/css">
-
-
     .boxed {
         background-color: lightblue;
         border-color: black;
@@ -15,7 +13,7 @@
     }
     
     body {
-        background-color: LightSkyBlue ;
+        background-color: LightSkyBlue;
     }
     
     #lbreak {
@@ -24,7 +22,7 @@
     }
     
     #Pdata {
-        position:relative;
+        position: relative;
         left: 20px;
     }
 </style>
@@ -33,27 +31,28 @@
     <h1>Spoof Consumer</h1>
     <div>
         <form>
-            Patient ID:<br>
-            <input type="text" id="pid"><br>
-            <select id="mySelect" size="8">
-            </select><br>
-            <input type="submit" value="Submit">
+            <!--Patient ID:<br>-->
+            <!--<input type="text" id="pid"><br>-->
+            <!--<select id="mySelect" size="8">-->
+            <!--</select><br>-->
+            <input type="submit" value="Connect">
         </form>
     </div><br>
-    <hr id = "lbreak" size="30" color = "#0099ff">
-    currently following...
+    <hr id="lbreak" size="30" color="#0099ff"> currently following...
     <h2 id='roomid'>Room</h2>
     <div style='width=100%'>
-     <div id = "Pbox" class="boxed" style = 'width : 300px; height : 220px;'>
-        <h3><center> PATIENT DATA </center></h3>
-        <div id = "Pdata">
-        <p id = "patientName">Name: </p>
-        <p id = "patientHeight">Height: </p>
-        <p id = "patientWeight">Weight: </p>
-        <p id = "patientGender">Gender: </p>
-        <p id = "patientStatus">Status: </p>
+        <div id="Pbox" class="boxed" style='width : 300px;'>
+            <h3>
+                <center> PATIENT DATA </center>
+            </h3>
+            <div id="Pdata">
+                <p id="patientName">Name: </p>
+                <p id="patientHeight">Height: </p>
+                <p id="patientWeight">Weight: </p>
+                <p id="patientGender">Gender: </p>
+                <p id="patientStatus">Status: </p>
+            </div>
         </div>
-    </div>
     </div>
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -66,34 +65,35 @@
         var pid;
 
         $('form').submit(function() {
-            pid = $('#pid').val();
-            
-            //If Empty then use selector option
-            if (pid == "") {
-                var e = document.getElementById("mySelect");
-                pid = e.options[e.selectedIndex].text;
-            }
-            
+            // pid = $('#pid').val();
+
+            // //If Empty then use selector option
+            // if (pid == "") {
+            //     var e = document.getElementById("mySelect");
+            //     pid = e.options[e.selectedIndex].text;
+            // }
+            pid = '123456789';
+
             //Display pid
             $('#roomid').text(pid);
-            
+
             //Reset list view
             $('#messages-alert').empty();
-            
-            
+
+
             setupRoom(pid);
             requestPatientData(pid);
-                        
+
             return false;
         });
 
-       //  socket.on('message', recieveMessage);
-       //  room.on('alert', recieveAlert);
+        //  socket.on('message', recieveMessage);
+        //  room.on('alert', recieveAlert);
 
         function setupRoom(roomID) {
             room = io('/' + roomID);
             console.log("set room to " + roomID);
-         //   room.emit('connect', pid);
+            //   room.emit('connect', pid);
             room.on('connect', function(msg) {
                 console.log("Connected room to server");
             });
@@ -107,45 +107,47 @@
             room.on('alert', recieveAlert);
             //get /  room.on('patient data', recievePatientData);
         }
-        
+
         function requestPatientData(pid) {
             $('#patientStatus').text("Status: ")
             spoof.emit("get patient data", pid);
-            
-                      //get patient data
+
+            //get patient data
             spoof.on('patient data', recievePatientData);
         }
 
 
         function recieveAlert(message) {
-            var s = "Status : " +  message.type; 
+            var s = "Status : " + message.type + ' ' + message.update;
             console.log(message);
-            if(pid == message.pid || true){
+            if (pid == message.pid || true) {
                 $('#patientStatus').text(s);
             }
         }
-        
+
         function recievePatientData(data) { /// add panel for user data
-            $('#patientName').text("Name: " + data.name);
-            $('#patientHeight').text("Height: " + data.height);
-            $('#patientWeight').text("Weight: " + data.weight);
-            $('#patientGender').text("Gender: " + data.gender);
+            console.log(data);
+            $('#patientName').text("Name: " + data.Name);
+            $('#patientHeight').text("Height: " + data.Height);
+            $('#patientWeight').text("Weight: " + data.Weight);
+            $('#patientGender').text("Gender: " + data.Gender);
         }
 
         spoof.once('connect', function(socket) {
-        console.log("Spoof Connected");
+            console.log("Spoof Connected");
             spoof.emit('get patients', "please");
         });
-        
-        spoof.once('spoof patients', function(mList) {
-            // console.log(mList);
-            var x = document.getElementById("mySelect");
-            for (var i in mList) {
-                var option = document.createElement("option");
-                option.text = mList[i];
-                x.add(option);
-            }
-        });
+
+        // spoof.once('spoof patients', function(mList) {
+        //     // console.log(mList);
+        //     var x = document.getElementById("mySelect");
+        //     for (var i in mList) {
+        //         var option = document.createElement("option");
+        //         option.text = mList[i];
+        //         if (option)
+        //             x.add(option);
+        //     }
+        // });
     </script>
 </body>
 
