@@ -1,0 +1,24 @@
+.boxed {
+    background-color: lightblue;
+    border-color: black;
+    border-style: solid;
+}
+
+body {
+    background-color: LightSkyBlue;
+}
+
+#lbreak {
+    border-style: solid;
+    border-color: black;
+}
+
+#Pdata {
+    position: relative;
+    left: 20px;
+}
+
+.patient {
+    position: relative;
+    left: 20px;
+}
