@@ -1,19 +1,23 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-
 var FB = require("./Firebase.js");
 
-var room = io.of('/admin');
+var room;
 
 /********
 Admin Methods
 *********/
-function setup() {
-    room.on('connection', function(socket) {
+function setup(io) {
+    if (!io) {
+        console.log('CRITICAL ERROR IN ADMIN: NO SERVER FOUND!');
+        return;
+    }
+    console.log('Running setup for ADMIN');
+    
+    room = io.of('/admin');
+    room.on('connect', function(socket) {
         console.log('Admin has connected');
 
         // send information back to admin
+        sendPatientNamesToAdmin();
 
         // Setup recievers
         socket.on('disconnect', function(socket) {
@@ -21,33 +25,52 @@ function setup() {
         });
 
         socket.on('request patient list', sendPatientListToAdmin);
-        socket.on('request moniter list', sendMoniterListToAdmin);
         socket.on('add patient', addPatient);
-        socket.on('add moniter', addMoniter);
 
+    });
+    
+}
+
+//Sends object with PID as key
+function sendPatientListToAdmin() {
+    FB.getAllPatientInfo(function (snapshot) {
+        if(snapshot) {
+            room.emit('patient list', snapshot.val());
+        }
     });
 }
 
-function sendPatientListToAdmin() {
-    //room.emit('patient list', patientList);
+//Sends an Array of PID and Name to admin
+function sendPatientNamesToAdmin() {
+    FB.getAllPatientInfo(function (snapshot) {
+        if(snapshot) {
+            var list = snapshot.val();
+            
+            var arr = [];
+            for(var pid in list) {
+                var obj = {
+                    pid: pid,
+                    name: list[pid].Name
+                };
+                arr.push(obj);
+            }
+            
+            console.log(arr);
+            
+            room.emit('patient names', arr);
+        }
+    });
 }
 
-function sendMoniterListToAdmin() {
-    //room.emit('moniter list', monitorList);
+function addPatient(m) {
+    
+    FB.createPatient(m.pid, m.city, m.state, m.street, m.zip, m.name, m.dob, m.gender, m.height, m.weight, m.insurance, m.location, m.provider);
 }
 
-function addPatient(message) {
-
-    //patientList[message.pid] = message.data;
-
-    // Update disk copy
-    //fs.writeFile('patient.json', JSON.stringify(patientList));
+function addBill(m) {
+    
 }
 
-function addMoniter(message) {
-
-    //monitorList[message.mid] = message.data;
-
-    // Update disk copy
-    //fs.writeFile('monitor.json', JSON.stringify(monitorList));
-}
+module.exports = {
+    setup
+};

@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 var path = require('path');
 
 // var FB = require("./server/Firebase.js");
-// var SA = require("./server/serveradmin.js");
+var SA = require("./server/serveradmin.js");
 // var SC = require("./server/serverconsumer.js");
 var SP = require("./server/serverproducer.js");
 
@@ -58,3 +58,4 @@ http.listen(process.env.PORT, function() {
 });
 
 SP.setup(io);
+SA.setup(io);

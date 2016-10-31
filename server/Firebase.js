@@ -20,7 +20,7 @@ var patientInfoHolder = "";
 
 // Writes data to the root of the patient. I am hoping that this works and doesn't ruin the object
 function createPatient(patientID, city, state, street, zip, name, dob, gender, height, weight, insurance, location, provider) {
-    console.log("Create Patient");
+    console.log("Create Patient and send to database");
 
     var addressDict = {
         "City": city,
@@ -42,7 +42,6 @@ function createPatient(patientID, city, state, street, zip, name, dob, gender, h
     });
 }
 
-
 // Retrieves data from the Database. key will need to be a path if it is going into a dictionary within the object
 function retrieveUserData(patientID, key, onCall) {
     console.log("Retrieve Patient " + patientID + "  data");
@@ -51,87 +50,12 @@ function retrieveUserData(patientID, key, onCall) {
     data.once('value', onCall);
 }
 
-
-//function getAllPatientNames(onCall) {
-//
-//    return database.ref('Patients/').once('value').then(function(snapshot, onCall) {
-//        var val = snapshot.val();
-//
-//        var label = [];
-//        for (var i in val) {
-//            label.push(i);
-//        }
-//
-//        var name = [];
-//        for (var i = 0; i < label.length; i++) {
-//            console.log(i);
-//            name.push(val[label[i]].Name);
-//        }
-//
-//        //console.log(name);
-//        onCall(name);
-//
-//    });
-//
-//}
-
 function getAllPatientInfo(onCall) {
     console.log("Retrieving all patient data");
 
     var data = database.ref('Patients/');
-    data.once('value', onCall);//function(data) {
-        //var val = data.val();
-        //
-        //var label = [];
-        //    for (var i in val) {
-        //        label.push(i);
-        //    }
-        //
-        //    var list = [];
-        //    for (var i = 0; i < label.length; i++) {
-        //        var obj = {
-        //            'pid': label[i],
-        //            'name': val[label[i]].Name
-        //        };
-        //
-        //        list.push(obj);
-        //    }
-        //
-        //    patientInfoHolder = list;
-        //    console.log(patientInfoHolder)
-    //});
-    //database.ref('Patients/').once('value').then(function(snapshot) {
-    //    var val = snapshot.val();
-    //    //console.log(val);
-    //
-    //    var label = [];
-    //    for (var i in val) {
-    //        label.push(i);
-    //    }
-    //
-    //    var list = [];
-    //    for (var i = 0; i < label.length; i++) {
-    //        console.log(i);
-    //        var obj = {
-    //            'pid': label[i],
-    //            'name': val[label[i]].Name
-    //        };
-    //
-    //        list.push(obj);
-    //    }
-    //
-    //    patientInfoHolder = list;
-    //    console.log(patientInfoHolder)
-    //});
-
-    //while(patientInfoHolder == "")
-    //{
-    //    console.log("Stuck in a loop");
-    //}
-    //
-    //console.log(patientInfoHolder);
+    data.once('value', onCall);
 }
-
 
 function updatePatientInfo(patientID, value, updatedInfo) {
     console.log("Updating " + patientID + " data with " + updatedInfo);
@@ -142,8 +66,39 @@ function updatePatientInfo(patientID, value, updatedInfo) {
     return database.ref().update(updates);
 }
 
+function addBill(bid, bill) {
+    console.log('Creating bill');
+    database.ref('Billing/' + bid + '/').set({
+        balance:bill.balance,
+        dueDate:bill.dueDate,
+        pid:bill.pid
+    });
+}
+
+function updateBillBalance(bid, value) {
+    console.log("Updating " + bid + " balance with " + value);
+
+    var updates = {};
+    updates['Billing/' + bid + '/' + 'balance'] = value;
+
+    return database.ref().update(updates);
+}
+
+function updateBillDueDate(bid, date) {
+    console.log("Updating " + bid + " due date with " + date);
+
+    var updates = {};
+    updates['Billing/' + bid + '/' + 'dueDate'] = date;
+
+    return database.ref().update(updates);
+}
+
 module.exports = {
-  createPatient: createPatient,
-  updatePatientInfo: updatePatientInfo,
-  retrieveUserData: retrieveUserData,
+  createPatient,
+  updatePatientInfo,
+  retrieveUserData,
+  getAllPatientInfo,
+  addBill,
+  updateBillBalance,
+  updateBillDueDate
 };

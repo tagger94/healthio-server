@@ -14,7 +14,7 @@ Producer Methods
 *********/
 function setup(io) {
     if (!io) {
-        console.log('CRITICAL ERROR: NO SERVER FOUND!');
+        console.log('CRITICAL ERROR IN PRODUCER: NO SERVER FOUND!');
         return;
     }
     console.log('Running setup for PRODUCER');
