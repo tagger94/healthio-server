@@ -26,6 +26,7 @@ function setup(io) {
 
         socket.on('request patient list', sendPatientListToAdmin);
         socket.on('add patient', addPatient);
+        socket.on('add bill', addBill);
 
     });
     
@@ -68,7 +69,13 @@ function addPatient(m) {
 }
 
 function addBill(m) {
-    
+    //Generate unique number for bill id
+    var bid = new Date().getTime();
+    FB.addBill(bid, {
+        balance:m.balance,
+        dueDate:m.dueDate,
+        pid:m.pid
+    });
 }
 
 module.exports = {

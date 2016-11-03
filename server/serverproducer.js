@@ -58,7 +58,7 @@ function Event(pid, data) {
             this.patient = snapshot.val();
             console.log("Last Data Point: " + this.patient);
             //Check if critical
-            SC.sendUpdate(this.pid, "heart", this.data);
+            SC.sendUpdate(this.pid, this.data);
         }
 
         //Send to database for updating

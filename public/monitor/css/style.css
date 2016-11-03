@@ -13,12 +13,18 @@ body {
     border-color: black;
 }
 
-#Pdata {
+.patient {
+    border-style: solid;
+    border-color: black;
     position: relative;
     left: 20px;
+    background-color: lightblue;
+    width: 200px;
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px;
 }
 
-.patient {
-    position: relative;
-    left: 20px;
+.close {
+    float: right;
 }

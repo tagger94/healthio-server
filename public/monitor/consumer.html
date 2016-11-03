@@ -12,16 +12,13 @@
         <form>
             Patient ID:<br>
             <input type="text" id="pid"><br>
-            <!--<select id="mySelect" size="8">-->
-            <!--</select><br>-->
-            
         </form>
-        <input type="submit" value="Connect" onClick="TestNodeMaker()">
+        <input type="submit" value="Connect" onClick="get_pData()">
     </div><br>
     <hr id="lbreak" size="30" color="#0099ff"> currently following...
     <h2 id='roomid'>Room</h2>
     <div style='width=100%' id="patientDash">
-        Hello
+
 
     </div>
 
@@ -31,9 +28,9 @@
         //var socket = io();
         //var roomAlex = io('/alex');
         var room = io('/consumer');
-        var spoof = io('/spoof');
+        setupRoom();
 
-        function setupRoom(roomID) {
+        function setupRoom() {
             room.on('connect', function(msg) {
                 console.log("Connected room to server");
             });
@@ -50,62 +47,95 @@
 
         function get_pData() {
             var pid = document.getElementById("pid").value;
-            document.getElementById("pid").val = "";
-            if (pid && !(isNaN(pid))) {
+            $("#pid").val("");
+            if (pid && (isNaN(pid))) {
                 console.log("Not a patient id");
                 return;
             }
+
             requestPatientData(pid);
+
         }
 
         function requestPatientData(pid) {
-            $('#patientStatus').text("Status: ")
+            //$('#patientStatus').text("Status: ")
+            console.log("requesting data");
             //TODO --> remove spoof
-           // spoof.emit("subscribe to patient", pid);
-        }
-        
-        function TestNodeMaker() {
-            var data = {"pid" : "123", "name" : "Jack", "Height" : "6'1", "Weight" : "160 lbs", "Gender" : "Male" };
-            recievePatientData(data);
+            room.emit("subscribe to patient", pid);
         }
 
         function recieveUpdate(message) {
+            console.log('Update Recived for ' + message.pid);
             var s = "Status : " + message.update;
-            console.log(message);
-                $('#patientStatus').text(s);
+            // var statusSpot = "patientStatus" + message.pid;
+            // ToDo recieve status update
+            $('#patientStatus' + message.pid).text(s);
         }
 
-        function recievePatientData(data) { /// add panel for user data
-            var patientDash = $("#patientDash");
-            var patientNode = document.createElement("div");
-            patientNode.id = data.pid;
-            patientNode.class = "patient";
+        function addCloseButton(pid) {
+
+            var closeButton = document.createElement("input");
+            closeButton.type = "submit";
+            closeButton.value = "close";
+            closeButton.id = "close" + pid;
+            closeButton.className = "close";
+            closeButton.src = "https://grants.hrsa.gov/2010/WebEPSExternal//platform/include/skins/EHB/images/close_1.png";
+            closeButton.type = "image";
+            closeButton.onclick = function() {
+                this.parentNode.parentNode.removeChild(this.parentNode);
+
+                console.log('Unsubscribing from ' + pid);
+                room.emit('unsubscribe', pid);
+
+                return false;
+            }
+
+            return closeButton;
+        }
+
+        function recievePatientData(data) {
+            console.log(data);
+
+            var patientDash = document.getElementById("patientDash");
+            var patientDiv = document.createElement("div");
+            patientDiv.appendChild(addCloseButton(data.pid));
+
+            patientDiv.id = data.pid;
+            patientDiv.className = "patient";
 
             var patientName = document.createElement("p")
-            //patientName.val = "Name: " + data.Name;
-            var patientNameText = document.createTextNode("Name: " + data.Name);
-            patientName.appendChild(patientNameText);
-            
-            
             var patientHeight = document.createElement("p")
-            patientHeight.val = "Height: " + data.Height;
             var patientWeight = document.createElement("p")
-            patientWeight.val = "Weight: " + data.Weight;
             var patientGender = document.createElement("p")
-            patientGender.val = "Gender: " + data.Gender;
             var patientStatus = document.createElement("p");
-            var patientStatus = document.createElement("p");
-            patientStatus.val = "Status: ";
-            patientStatus.id = "patientStatus";
 
-            patientNode.appendChild(patientName);
-            patientNode.appendChild(patientHeight);
-            patientNode.appendChild(patientWeight);
-            patientNode.appendChild(patientGender);
-            patientNode.appendChild(patientStatus);
-            console.log(patientDash);
-            console.log(patientGender);
-            //patientDash.appendChild(patientNode);
+            var patientNameText = document.createTextNode("Name: " + data.Name);
+            var patientHeightText = document.createTextNode("Height: " + data.Height);
+            var patientWeightText = document.createTextNode("Weight: " + data.Weight);
+            var patientGenderText = document.createTextNode("Gender: " + data.Gender);
+            var patientStatusText = document.createTextNode("Status: ");
+
+            patientStatus.id = "patientStatus" + data.pid;
+
+            patientName.appendChild(patientNameText);
+            patientHeight.appendChild(patientHeightText);
+            patientWeight.appendChild(patientWeightText);
+            patientGender.appendChild(patientGenderText);
+            patientStatus.appendChild(patientStatusText);
+
+            patientDiv.appendChild(patientName);
+            patientDiv.appendChild(patientHeight);
+            patientDiv.appendChild(patientWeight);
+            patientDiv.appendChild(patientGender);
+            patientDiv.appendChild(patientStatus);
+
+            patientDash.appendChild(patientDiv);
+            
+            //Populate starting value
+            recieveUpdate({
+                pid: data.pid,
+                update: data.Last_Sensor_Value
+            });
 
         }
     </script>

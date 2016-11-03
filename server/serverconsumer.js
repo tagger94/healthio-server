@@ -22,20 +22,27 @@ function setup(io) {
 
         socket.on('subscribe to patient', function(pid) {
 
-            //TODO check for valid pid
-
             //Setup Object for binding
             var obj = {
                 pid: pid,
                 sendToConsumer: function(patient) {
                     console.log("Sending patient data to consumer");
-                    socket.emit("send patient data", patient);
+                    patient.pid = this.pid;
+                    console.log(patient.pid + ' : ' + patient.Name);
+                    socket.emit("patient data", patient);
                 }
             };
 
 
             //Call DB and set callback method
-            FB.retrieveUserData(pid, "", obj.sendToConsumer);
+            FB.retrieveUserData(pid, "", function(snapshot) {
+                // Check if valid
+                if(!snapshot.val()) {
+                    console.log('Patient does not Exist!');
+                    return;
+                }
+                obj.sendToConsumer(snapshot.val());
+            });
 
 
             //Check if already in subs
@@ -49,6 +56,20 @@ function setup(io) {
             //Add socket to list of subs
             subs[pid].list.push(socket);
         });
+
+        socket.on('unsubscribe', function(pid) {
+            console.log('Request to unsubscribe from ' + pid);
+
+            //Check if valid
+            if (!subs[pid]) {
+                console.log('Failed to unsubscribe');
+                return
+            }
+
+            var index = subs[pid].list.indexOf(socket);
+            //Remove subsriber from list for pid
+            subs[pid].list.splice(index, 1);
+        })
 
         socket.on('disconnect', function() {
             console.log('Disconnected from consumer');
@@ -77,8 +98,8 @@ function sendUpdate(pid, update) {
     };
 
     //Send to subs
-    for (var socket in subs[pid].list) {
-        socket.emit('update', message);
+    for (var i = 0; i < subs[pid].list.length; i++) {
+        subs[pid].list[i].emit('update', message);
     }
 }
 
