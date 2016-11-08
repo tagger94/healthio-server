@@ -43,8 +43,7 @@
         <tr>
             <td>
                 <form name="createForm" onsubmit="true">
-                    Patient ID: <input id="textInID" type="text" name="valid">
-                    Patient Name: <input id="textInName" type="text" name="valid">
+                    Patient Name: <input id="textInName" type="text" name="valid"><br>
                     <input id="createButton" type="button" value="Create">
                 </form>
             </td>
@@ -57,7 +56,18 @@
         </tr>
         <tr id="tableRow">
             <td width="50%">
-                
+                Patient ID: <input id="textInID" type="text" name="valid"><br>
+                City: <input id="textCity" type="text" name="valid"><br>
+                State: <input id="textState" type="text" name="valid"><br>
+                Street: <input id="textStreet" type="text" name="valid"><br>
+                Zip: <input id="textZip" type="text" name="valid"><br>
+                Date of Birth: <input id="textDOB" type="text" name="valid"><br>
+                Gender: <input id="textGender" type="text" name="valid"><br>
+                Height: <input id="textHeight" type="text" name="valid"><br>
+                Weight: <input id="textWeight" type="text" name="valid"><br>
+                Insurance: <input id="textInsurance" type="text" name="valid"><br>
+                Insurance Location: <input id="textInsLocation" type="text" name="valid"><br>
+                Insurance Provider: <input id="textInsProvider" type="text" name="valid"><br>
             </td>
             <td id="patient" width="50%">
                 
@@ -179,7 +189,7 @@
             
             var patientDataRow = [];
 
-console.log(patientData);
+            console.log(patientData);
 
             patientDataRow.push(input);
             
@@ -200,12 +210,12 @@ console.log(patientData);
             var result = "";
             result += (labels[0] + ": " + patientDataRow[0] + "\n")
             var j = 0;
-            for(patient in patientData){
-                if(j == 0){
-                    for(item in patientData)
-                }
-                j++;
-            }
+            // for(patient in patientData){
+            //     if(j == 0){
+            //         for(item in patientData)
+            //     }
+            //     j++;
+            // }
             
             for(var i = 0; i < patientDataRow.length; i++){
                 result += (labels[i] + ": " + patientDataRow[i] + "\n");
