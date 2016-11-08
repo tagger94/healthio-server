@@ -73,6 +73,14 @@ function setup(io) {
 
         socket.on('disconnect', function() {
             console.log('Disconnected from consumer');
+            
+            for(var key in subs) {
+                var index = subs[key].list.indexOf(socket);
+                if(index >= 0) {
+                    console.log('Unsubscribed disconnect client from patient');
+                    subs[key].list.splice(index, 1);
+                }
+            }
         })
     })
 

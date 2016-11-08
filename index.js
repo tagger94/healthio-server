@@ -17,39 +17,6 @@ Default Methods
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-//Depreciated
-function setupRouting() {
-    //Home page 
-    app.get('/', function(req, res) {
-        res.sendFile(__dirname + '/client/home.html');
-    });
-
-    //Log in screen
-    app.get('/client/views/login', function(req, res) {
-        res.sendFile(__dirname + '/client/views/login.html');
-    });
-
-    //Add/Remove/View patient 
-    app.get('/client/views/patient', function(req, res) {
-        res.sendFile(__dirname + '/client/views/patient.html');
-    });
-
-    //Add/Remove/View billing
-    app.get('/client/views/billing', function(req, res) {
-        res.sendFile(__dirname + '/client/views/billing.html');
-    });
-
-    app.get('/consumer', function(req, res) {
-        res.sendFile(__dirname + '/monitor/consumer.html');
-    });
-
-    app.get('/producer', function(req, res) {
-        res.sendFile(__dirname + '/monitor/producer.html');
-    });
-    app.use(express.static(path.join(__dirname, 'public')));
-
-}
-
 /********
 Default Methods
 *********/
