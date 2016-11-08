@@ -56,7 +56,7 @@ function sendPatientNamesToAdmin() {
                 arr.push(obj);
             }
             
-            console.log(arr);
+            // console.log(arr);
             
             room.emit('patient names', arr);
         }
