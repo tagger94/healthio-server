@@ -29,7 +29,17 @@ function setupRouting() {
         res.sendFile(__dirname + '/client/views/login.html');
     });
 
-    //Add/Remove/View patient 
+    //Add/Remove patient 
+    app.get('/client/views/addPatient', function(req, res) {
+        res.sendFile(__dirname + '/client/views/addpatient.html');
+    });
+    
+    //View patient Data
+    app.get('/client/views/allpatients', function(req, res) {
+        res.sendFile(__dirname + '/client/views/allpatients.html');
+    });
+    
+    //patient view links 
     app.get('/client/views/patient', function(req, res) {
         res.sendFile(__dirname + '/client/views/patient.html');
     });

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>View Patient Data</title>
+</head>
+
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <h1 align="center">Patient Data</h1>
+    <hr>
+    
+    Patient ID: <input id="textInView" type="text" name="valid">
+                <input id="viewDataButton" type="button" value="View Data">
+                
+    <script type="text/javascript">
+        var socket = io('/admin');
+        socket.on('connect', function() {
+            socket.emit('request patient list', "");
+
+            socket.once('patient list', usePatientList)
+        })
+        var patientData = [];
+        var names = [];
+        var labels = [];
+        var patientID = [];
+        var hasConnected = 0;
+
+        function usePatientList(patientList) {
+
+        console.log(patientList);
+            initArrays(patientList);
+
+            if (!hasConnected) {
+                hasConnected = 1;
+                document.getElementById("viewDataButton").onclick = viewPatientData_PID;
+                drawList();
+            }
+        }
+        
+        function initArrays(patientList){
+            //List of patient IDs.
+            for (var i in patientList) {
+                patientID.push(i);
+            }
+
+            //List of patient dat labels.
+            
+            //Add a lable for d3 table.
+            labels.push("p_ID")
+            for (var i in patientList[patientID[0]]) {
+                labels.push(i);
+            }
+
+            
+            var rowOfData = [];
+
+            // Fill Patients
+            for (var patient in patientList) {
+                var patientDataList = patientList[patient];
+
+                //Reset
+                rowOfData = [];
+                for (var listElement in patientDataList) {
+                    var dataLabels = patientDataList[listElement];
+
+                    rowOfData.push(dataLabels);
+                }
+                patientData.push(rowOfData);
+            }
+
+            //Array of names
+            for (var i = 0; i < patientData.length; i++) {
+                names.push(patientData[i][7]);
+            }
+        }
+
+        function drawList(){
+            d3.select("body")
+                    .append("div")
+                    .attr("id", "patientListView")
+                    .attr("class", "patientListViewEmpty");
+                        
+            redrawList();
+        }
+        
+        function redrawList() {
+            // Select teh patientLiseView div from the html.
+            var patientView = d3.select("body")
+                                .select("#patientListView")
+            
+            // Clear what is there.
+            patientView.html("");
+
+            patientView.append("p")
+                        .selectAll("p")
+                        .data(names, function(d, i) {
+                            return d + i;
+                        })
+                        .enter()
+                            .append("p")
+                            .text(function(d, i) {
+                                return patientID[i] + ": " + d;
+                            })
+                            .on("click", function(d, i) {
+                                document.getElementById("textInView").value = patientID[i];
+                            })
+                            .append("div")
+                                .html("<hr style=\"border-bottom: 0px\">");
+        }
+        
+        function viewPatientData_PID() {
+            input = document.getElementById("textInView").value;
+            
+            var patientDataRow = [];
+
+            console.log(patientData);
+
+            patientDataRow.push(input);
+            
+            // if(input.length >= 4){
+            //     input = input.substring(input.length - 4);
+                
+            //     var PID = parseInt(input);
+                
+            //     var PID_exists = patientExists();
+                
+            //     if(PID_exists){
+            //         for (var i = 0; i < patientData[PID - 1].length; i++) {
+            //             patientDataRow.push(patientData[PID - 1][i]);
+            //         }
+            //     }
+            // }
+            
+            var result = "";
+            result += (labels[0] + ": " + patientDataRow[0] + "\n")
+            var j = 0;
+            // for(patient in patientData){
+            //     if(j == 0){
+            //         for(item in patientData)
+            //     }
+            //     j++;
+            // }
+            
+            for(var i = 0; i < patientDataRow.length; i++){
+                result += (labels[i] + ": " + patientDataRow[i] + "\n");
+            }
+            
+            alert(result);
+        }
+        
+        
+    </script>
+</body>
+    
+    
+
+    
+
+    
+</html>
