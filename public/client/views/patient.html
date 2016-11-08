@@ -44,7 +44,6 @@
             <td>
                 <form name="createForm" onsubmit="true">
                     Patient Name: <input id="textInName" type="text" name="valid"><br>
-                    <input id="createButton" type="button" value="Create">
                 </form>
             </td>
             <td>
@@ -68,6 +67,7 @@
                 Insurance: <input id="textInsurance" type="text" name="valid"><br>
                 Insurance Location: <input id="textInsLocation" type="text" name="valid"><br>
                 Insurance Provider: <input id="textInsProvider" type="text" name="valid"><br>
+                <input id="createButton" type="button" value="Create">
             </td>
             <td id="patient" width="50%">
                 
@@ -225,8 +225,37 @@
         }
         
         function addPatient(){
+            //Firebase
+            FB.createPatient(m.pid, m.city, m.state, m.street, m.zip, m.name, m.dob, m.gender, m.height, m.weight, m.insurance, m.location, m.provider);
+            var m = [];
             var name = document.getElementById("textInName").value;
+            m.push(name);
             var id = document.getElementById("textInID").value;
+            m.push(id);
+            var city = document.getElementById("textCity").value;
+            m.push(city);
+            var state = document.getElementById("textState").value;
+            m.push(state);
+            var street = document.getElementById("textStreet").value;
+            m.push(street);
+            var p_zip = document.getElementById("textZip").value;
+            m.push(p_zip);
+            var p_dob = document.getElementById("textDOB").value;
+            m.push(p_dob);
+            var gender = document.getElementById("textGender").value;
+            m.push(gender);
+            var p_height = document.getElementById("textHeight").value;
+            m.push(p_height);
+            var p_weight = document.getElementById("textWeight").value;
+            m.push(p_weight);
+            var p_ins = document.getElementById("textInsurance").value;
+            m.push(p_ins);
+            var p_ins_loc = document.getElementById("textInsLocation").value;
+            m.push(p_ins_loc);
+            var p_ins_pro = document.getElementById("textInsProvider").value;
+            m.push(p_ins_pro);
+            
+            //UI
             names.push(name);
             patientID.push(id);
             
