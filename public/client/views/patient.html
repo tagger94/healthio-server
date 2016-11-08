@@ -126,9 +126,8 @@
             }
 
             //Array of names
-            //will be from firebase eventually
             for (var i = 0; i < patientData.length; i++) {
-                names.push(patientData[i][0]);
+                names.push(patientData[i][7]);
             }
         }
 
@@ -180,25 +179,34 @@
             
             var patientDataRow = [];
 
+console.log(patientData);
+
             patientDataRow.push(input);
             
-            if(input.length >= 4){
-                input = input.substring(input.length - 4);
+            // if(input.length >= 4){
+            //     input = input.substring(input.length - 4);
                 
-                var PID = parseInt(input);
+            //     var PID = parseInt(input);
                 
-                var PID_exists = patientExists();
+            //     var PID_exists = patientExists();
                 
-                if(PID_exists){
-                    for (var i = 0; i < patientData[PID - 1].length; i++) {
-                        patientDataRow.push(patientData[PID - 1][i]);
-                    }
-                }
-            }
-            
-            console.log(patientDataRow);
+            //     if(PID_exists){
+            //         for (var i = 0; i < patientData[PID - 1].length; i++) {
+            //             patientDataRow.push(patientData[PID - 1][i]);
+            //         }
+            //     }
+            // }
             
             var result = "";
+            result += (labels[0] + ": " + patientDataRow[0] + "\n")
+            var j = 0;
+            for(patient in patientData){
+                if(j == 0){
+                    for(item in patientData)
+                }
+                j++;
+            }
+            
             for(var i = 0; i < patientDataRow.length; i++){
                 result += (labels[i] + ": " + patientDataRow[i] + "\n");
             }
