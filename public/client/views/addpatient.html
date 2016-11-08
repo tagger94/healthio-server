@@ -43,107 +43,30 @@
         function addPatient(){
             //Firebase
             //FB.createPatient(m.pid, m.city, m.state, m.street, m.zip, m.name, m.dob, m.gender, m.height, m.weight, m.insurance, m.location, m.provider);
-            var m = [];
-            var name = document.getElementById("textInName").value;
-            m.push(name);
-            var id = document.getElementById("textInID").value;
-            m.push(id);
-            var city = document.getElementById("textCity").value;
-            m.push(city);
-            var state = document.getElementById("textState").value;
-            m.push(state);
-            var street = document.getElementById("textStreet").value;
-            m.push(street);
-            var p_zip = document.getElementById("textZip").value;
-            m.push(p_zip);
-            var p_dob = document.getElementById("textDOB").value;
-            m.push(p_dob);
-            var gender = document.getElementById("textGender").value;
-            m.push(gender);
-            var p_height = document.getElementById("textHeight").value;
-            m.push(p_height);
-            var p_weight = document.getElementById("textWeight").value;
-            m.push(p_weight);
-            var p_ins = document.getElementById("textInsurance").value;
-            m.push(p_ins);
-            var p_ins_loc = document.getElementById("textInsLocation").value;
-            m.push(p_ins_loc);
-            var p_ins_pro = document.getElementById("textInsProvider").value;
-            m.push(p_ins_pro);
+            var m ={};
+            m.pid = document.getElementById("textInID").value;
+            m.city = document.getElementById("textCity").value;
+            m.state = document.getElementById("textState").value;
+            m.street = document.getElementById("textStreet").value;
+            m.zip = document.getElementById("textZip").value;
+            m.name = document.getElementById("textInName").value;
+            m.dob = document.getElementById("textDOB").value;
+            m.gender = document.getElementById("textGender").value;
+            m.height = document.getElementById("textHeight").value;
+            m.weight = document.getElementById("textWeight").value;
+            m.insurance = document.getElementById("textInsurance").value;
+            m.location = document.getElementById("textInsLocation").value;
+            m.provider = document.getElementById("textInsProvider").value;
             
             //Add patient with server FB call
+            socket.emit('add patient', m);
             
             //UI
             // names.push(name);
             // patientID.push(id);
             
-            alert("-Created Patient-\nName: " + name + "\nPID: " + id);
+            alert("-Created Patient-\nName: " + m.name + "\nPID: " + m.pid);
         }
-        
-        
-        
-        
-        
-        
-        // var patientData = [];
-        // var names = [];
-        // var labels = [];
-        // var patientID = [];
-        // var hasConnected = 0;
-
-        // function usePatientList(patientList) {
-
-        // console.print(patientList);
-        //     initArrays(patientList);
-
-        //     if (!hasConnected) {
-        //         hasConnected = 1;
-        //         document.getElementById("viewDataButton").onclick = viewPatientData_PID;
-        //         document.getElementById("createButton").onclick = addPatient;
-        //         drawList();
-        //     }
-        // }
-        
-        // function initArrays(patientList){
-        //     //List of patient IDs.
-        //     for (var i in patientList) {
-        //         patientID.push(i);
-        //     }
-
-        //     //List of patient dat labels.
-            
-        //     //Add a lable for d3 table.
-        //     labels.push("p_ID")
-        //     for (var i in patientList[patientID[0]]) {
-        //         labels.push(i);
-        //     }
-
-            
-        //     var rowOfData = [];
-
-        //     // Fill Patients
-        //     for (var patient in patientList) {
-        //         var patientDataList = patientList[patient];
-
-        //         //Reset
-        //         rowOfData = [];
-        //         for (var listElement in patientDataList) {
-        //             var dataLabels = patientDataList[listElement];
-
-        //             rowOfData.push(dataLabels);
-        //         }
-        //         patientData.push(rowOfData);
-        //     }
-
-        //     //Array of names
-        //     for (var i = 0; i < patientData.length; i++) {
-        //         names.push(patientData[i][7]);
-        //     }
-        // }
-        
-        
-        
-        
     </script>
 </body>
 
